@@ -79,21 +79,21 @@ export default function JobsAndInternships() {
       
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
-            Real-Time Firestore Jobs
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+            Real-Time Job Openings
           </span>
-          <h1 className="text-2xl font-extrabold text-slate-100 mt-1">Jobs & AI-Matched Internships</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 mt-1">Jobs & AI-Matched Internships</h1>
         </div>
 
         {appliedSuccess && (
-          <div className="px-4 py-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
-            <CheckCircle2 className="w-4 h-4" /> Application Submitted to Firestore for {appliedSuccess}!
+          <div className="px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold flex items-center gap-2 animate-in fade-in shadow-2xs">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Application Submitted Successfully for {appliedSuccess}!
           </div>
         )}
       </div>
 
       {/* Filter Bar */}
-      <div className="glass-panel rounded-2xl p-4 border border-slate-700/80 flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="relative flex-1 w-full">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
           <input
@@ -101,7 +101,7 @@ export default function JobsAndInternships() {
             placeholder="Search by job title, company, or required skill (e.g. React, PyTorch)..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-800/80 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-900 placeholder-slate-400 font-semibold focus:outline-none focus:border-blue-600 focus:bg-white"
           />
         </div>
 
@@ -110,10 +110,10 @@ export default function JobsAndInternships() {
             <button
               key={type}
               onClick={() => setFilterType(type)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                 filterType === type
                   ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-slate-800 text-slate-400 hover:text-white'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
               {type}
@@ -124,9 +124,9 @@ export default function JobsAndInternships() {
 
       {/* Jobs Listing */}
       {loading ? (
-        <div className="py-12 text-center text-xs text-slate-400 flex flex-col items-center gap-2">
-          <RefreshCw className="w-6 h-6 text-blue-400 animate-spin" />
-          <span>Fetching real-time opportunities from Firestore...</span>
+        <div className="py-12 text-center text-xs text-slate-500 font-medium flex flex-col items-center gap-2">
+          <RefreshCw className="w-6 h-6 text-blue-600 animate-spin" />
+          <span>Fetching real-time opportunities...</span>
         </div>
       ) : (
         <div className="space-y-4">
@@ -135,35 +135,35 @@ export default function JobsAndInternships() {
             const isApplied = appliedJobs.includes(job.id);
 
             return (
-              <div key={job.id} className="glass-card rounded-3xl p-6 border border-slate-700/60 space-y-4 hover:border-blue-500/50 transition-all">
+              <div key={job.id} className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-4 hover:border-blue-300 hover:shadow-md transition-all">
                 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-xs">
-                      <span className="font-semibold text-blue-400 flex items-center gap-1">
+                      <span className="font-bold text-blue-600 flex items-center gap-1">
                         <Building2 className="w-3.5 h-3.5" /> {job.companyName}
                       </span>
-                      <span className="text-slate-600">•</span>
-                      <span className="text-slate-400 flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5" /> {job.location}
+                      <span className="text-slate-300">•</span>
+                      <span className="text-slate-500 font-medium flex items-center gap-1">
+                        <MapPin className="w-3.5 h-3.5 text-slate-400" /> {job.location}
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-bold text-slate-100">{job.title}</h3>
+                    <h3 className="text-lg font-extrabold text-slate-900">{job.title}</h3>
 
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
-                      <span className="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 font-semibold border border-slate-700">
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 font-medium">
+                      <span className="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-800 font-semibold border border-blue-200">
                         {job.type}
                       </span>
-                      <span className="text-emerald-400 font-semibold">{job.stipend}</span>
+                      <span className="text-emerald-700 font-bold">{job.stipend}</span>
                       <span>Deadline: {job.deadline}</span>
                     </div>
                   </div>
 
                   {/* AI Match Badge & Apply Button */}
                   <div className="flex flex-col items-start md:items-end gap-3 shrink-0">
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-bold">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-800 border border-blue-200 text-xs font-bold">
+                      <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                       <span>Skill Match: {matchPercent}%</span>
                     </div>
 
@@ -172,13 +172,13 @@ export default function JobsAndInternships() {
                       disabled={isApplied}
                       className={`px-5 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition-all ${
                         isApplied
-                          ? 'bg-slate-800 text-emerald-400 cursor-not-allowed border border-emerald-500/30'
-                          : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/20'
+                          ? 'bg-emerald-50 text-emerald-700 cursor-not-allowed border border-emerald-200'
+                          : 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20'
                       }`}
                     >
                       {isApplied ? (
                         <>
-                          <CheckCircle2 className="w-4 h-4" /> Applied
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Applied
                         </>
                       ) : (
                         <>
@@ -189,16 +189,16 @@ export default function JobsAndInternships() {
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-300 leading-relaxed pt-2 border-t border-slate-800">
+                <p className="text-xs text-slate-700 leading-relaxed font-medium pt-2 border-t border-slate-100">
                   {job.description}
                 </p>
 
                 {/* Skill Tags Required */}
                 <div className="space-y-1">
-                  <span className="text-[11px] text-slate-400">Required Skills:</span>
+                  <span className="text-[11px] text-slate-500 font-semibold">Required Skills:</span>
                   <div className="flex flex-wrap gap-1.5">
                     {(job.skillsRequired || []).map((skill, i) => (
-                      <span key={i} className="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700">
+                      <span key={i} className="text-xs px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 font-semibold">
                         {skill}
                       </span>
                     ))}

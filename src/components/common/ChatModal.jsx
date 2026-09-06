@@ -40,18 +40,18 @@ export default function ChatModal({ recipientName, recipientRole, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-lg glass-panel rounded-3xl border border-slate-700/80 shadow-2xl overflow-hidden flex flex-col h-[520px] animate-in fade-in zoom-in-95">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+      <div className="w-full max-w-lg bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col h-[520px] animate-in fade-in zoom-in-95">
         
         {/* Header */}
-        <div className="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold">
+            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold">
               {recipientName ? recipientName.charAt(0) : 'U'}
             </div>
             <div>
-              <h3 className="text-sm font-bold text-slate-100">{recipientName || 'Direct Messaging'}</h3>
-              <p className="text-[11px] text-slate-400 capitalize flex items-center gap-1">
+              <h3 className="text-sm font-bold text-white">{recipientName || 'Direct Messaging'}</h3>
+              <p className="text-[11px] text-slate-300 capitalize flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
                 {recipientRole || 'Active User'}
               </p>
@@ -67,7 +67,7 @@ export default function ChatModal({ recipientName, recipientRole, onClose }) {
         </div>
 
         {/* Message Log */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-3 text-xs bg-slate-950/50">
+        <div className="flex-1 p-4 overflow-y-auto space-y-3 text-xs bg-slate-50">
           {messages.map((m, idx) => (
             <div
               key={idx}
@@ -77,29 +77,29 @@ export default function ChatModal({ recipientName, recipientRole, onClose }) {
                 className={`p-3 rounded-2xl max-w-[80%] leading-relaxed ${
                   m.sender === 'me'
                     ? 'bg-blue-600 text-white rounded-br-none'
-                    : 'bg-slate-800 text-slate-200 border border-slate-700/60 rounded-bl-none'
+                    : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none shadow-xs'
                 }`}
               >
                 {m.text}
               </div>
-              <span className="text-[10px] text-slate-500 mt-1 px-1">{m.time}</span>
+              <span className="text-[10px] text-slate-400 mt-1 px-1">{m.time}</span>
             </div>
           ))}
         </div>
 
         {/* Input */}
-        <form onSubmit={handleSend} className="p-3 bg-slate-900 border-t border-slate-800 flex items-center gap-2">
+        <form onSubmit={handleSend} className="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
           <input
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Type your message..."
-            className="flex-1 bg-slate-800 border border-slate-700/60 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+            className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 transition-colors"
           />
           <button
             type="submit"
             disabled={!text.trim()}
-            className="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white transition-colors"
+            className="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white transition-colors shadow-md shadow-blue-500/20"
           >
             <Send className="w-4 h-4" />
           </button>

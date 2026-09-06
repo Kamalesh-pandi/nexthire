@@ -57,18 +57,18 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full glass-panel border-b border-slate-700/40 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full bg-white/95 border-b border-slate-200 backdrop-blur-md shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
           {/* Brand Logo */}
           <div className="flex items-center space-x-3">
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                <Sparkles className="w-5 h-5 text-white animate-pulse" />
+              <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div>
-                <span className="text-xl font-extrabold tracking-tight gradient-text">NextHire</span>
+                <span className="text-xl font-extrabold tracking-tight text-blue-950">Next<span className="text-blue-600">Hire</span></span>
               </div>
             </Link>
           </div>
@@ -80,11 +80,11 @@ export default function Navbar() {
                 to={getDashboardPath()}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all ${
                   location.pathname.includes('/dashboard')
-                    ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
-                    : 'text-slate-300 hover:text-white'
+                    ? 'bg-blue-50 text-blue-700 border border-blue-200 font-bold'
+                    : 'text-slate-600 hover:text-blue-600 hover:bg-slate-50'
                 }`}
               >
-                <Sparkles className="w-3.5 h-3.5" />
+                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                 <span>Dashboard ({userRole})</span>
               </Link>
             </div>
@@ -96,12 +96,11 @@ export default function Navbar() {
 
             {/* Theme Switcher Button */}
             <button
-
               onClick={toggleTheme}
-              className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors border border-slate-700/50"
+              className="p-2 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors border border-slate-200"
               title="Toggle Theme"
             >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-400" />}
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-indigo-600" />}
             </button>
 
             {currentUser ? (
@@ -110,11 +109,11 @@ export default function Navbar() {
                 <div className="relative">
                   <button
                     onClick={() => setShowNotifications(!showNotifications)}
-                    className="relative p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors border border-slate-700/50"
+                    className="relative p-2 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors border border-slate-200"
                   >
                     <Bell className="w-4 h-4" />
-                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-blue-500 animate-ping" />
-                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-blue-500" />
+                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-blue-600 animate-ping" />
+                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-blue-600" />
                   </button>
 
                   {showNotifications && (
@@ -126,39 +125,39 @@ export default function Navbar() {
                 <div className="relative">
                   <button
                     onClick={() => setShowUserDropdown(!showUserDropdown)}
-                    className="flex items-center space-x-2 p-1.5 rounded-xl border border-slate-700/60 bg-slate-800/40 hover:bg-slate-800 transition-colors"
+                    className="flex items-center space-x-2 p-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-blue-50/70 transition-colors text-slate-800"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white text-sm">
+                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white text-sm shadow-xs">
                       {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
                     </div>
                     <div className="hidden sm:block text-left">
-                      <div className="text-xs font-semibold text-slate-100 max-w-[120px] truncate">{currentUser.name}</div>
-                      <div className="text-[10px] text-slate-400 capitalize flex items-center gap-1">
-                        <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                      <div className="text-xs font-bold text-slate-900 max-w-[120px] truncate">{currentUser.name}</div>
+                      <div className="text-[10px] text-slate-500 capitalize flex items-center gap-1">
+                        <ShieldCheck className="w-3 h-3 text-blue-600" />
                         {userRole}
                       </div>
                     </div>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
                   </button>
 
                   {showUserDropdown && (
-                    <div className="absolute right-0 mt-2 w-64 bg-slate-900 rounded-2xl shadow-2xl py-2 border border-slate-700/90 z-50 animate-in fade-in slide-in-from-top-2">
-                      <div className="px-4 py-2.5 border-b border-slate-800">
-                        <p className="text-sm font-bold text-slate-100">{currentUser.name}</p>
-                        <p className="text-xs text-slate-400 truncate mt-0.5">{currentUser.email}</p>
+                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl py-2 border border-slate-200 z-50 animate-in fade-in slide-in-from-top-2">
+                      <div className="px-4 py-2.5 border-b border-slate-100 bg-slate-50/50">
+                        <p className="text-sm font-bold text-slate-900">{currentUser.name}</p>
+                        <p className="text-xs text-slate-500 truncate mt-0.5">{currentUser.email}</p>
                         <div className="mt-2 flex items-center justify-between">
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded-md border border-blue-500/30">
+                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md border border-blue-200">
                             {userRole}
                           </span>
-                          <span className="text-[10px] text-emerald-400 flex items-center gap-1 font-medium">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping inline-block" />
-                            Active
+                          <span className="text-[10px] text-emerald-600 flex items-center gap-1 font-semibold">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse inline-block" />
+                            Active Session
                           </span>
                         </div>
                       </div>
 
                       {/* Navigation Links for Current Role */}
-                      <div className="py-2 border-b border-slate-800 space-y-0.5 px-1">
+                      <div className="py-2 border-b border-slate-100 space-y-0.5 px-1">
                         <p className="px-3 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                           Menu Options
                         </p>
@@ -169,33 +168,33 @@ export default function Navbar() {
                             <Link
                               to="/student/dashboard"
                               onClick={() => setShowUserDropdown(false)}
-                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
                             >
-                              <LayoutDashboard className="w-4 h-4 text-blue-400" />
+                              <LayoutDashboard className="w-4 h-4 text-blue-600" />
                               Dashboard
                             </Link>
                             <Link
                               to="/student/profile"
                               onClick={() => setShowUserDropdown(false)}
-                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
                             >
-                              <User className="w-4 h-4 text-purple-400" />
+                              <User className="w-4 h-4 text-blue-600" />
                               My Profile & Skills
                             </Link>
                             <Link
                               to="/student/resume-analyzer"
                               onClick={() => setShowUserDropdown(false)}
-                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
                             >
-                              <Sparkles className="w-4 h-4 text-amber-400" />
+                              <Sparkles className="w-4 h-4 text-amber-500" />
                               AI Resume Analyzer
                             </Link>
                             <Link
                               to="/student/jobs"
                               onClick={() => setShowUserDropdown(false)}
-                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
                             >
-                              <Briefcase className="w-4 h-4 text-emerald-400" />
+                              <Briefcase className="w-4 h-4 text-emerald-600" />
                               Jobs & Internships
                             </Link>
                           </>
@@ -207,33 +206,33 @@ export default function Navbar() {
                             <Link
                               to="/academician/dashboard"
                               onClick={() => setShowUserDropdown(false)}
-                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
                             >
-                              <LayoutDashboard className="w-4 h-4 text-blue-400" />
+                              <LayoutDashboard className="w-4 h-4 text-blue-600" />
                               Placement Dashboard
                             </Link>
                             <Link
                               to="/academician/analytics"
                               onClick={() => setShowUserDropdown(false)}
-                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
                             >
-                              <BarChart3 className="w-4 h-4 text-purple-400" />
+                              <BarChart3 className="w-4 h-4 text-indigo-600" />
                               Skill Gap Analytics
                             </Link>
                             <Link
                               to="/academician/monitoring"
                               onClick={() => setShowUserDropdown(false)}
-                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
                             >
-                              <TrendingUp className="w-4 h-4 text-emerald-400" />
+                              <TrendingUp className="w-4 h-4 text-emerald-600" />
                               Student Readiness
                             </Link>
                             <Link
                               to="/academician/curriculum-projects"
                               onClick={() => setShowUserDropdown(false)}
-                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
                             >
-                              <BookOpenCheck className="w-4 h-4 text-amber-400" />
+                              <BookOpenCheck className="w-4 h-4 text-amber-500" />
                               AI Curriculum & Projects
                             </Link>
                           </>
@@ -245,33 +244,33 @@ export default function Navbar() {
                             <Link
                               to="/industry/dashboard"
                               onClick={() => setShowUserDropdown(false)}
-                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
                             >
-                              <LayoutDashboard className="w-4 h-4 text-blue-400" />
+                              <LayoutDashboard className="w-4 h-4 text-blue-600" />
                               Recruiter Dashboard
                             </Link>
                             <Link
                               to="/industry/post-job"
                               onClick={() => setShowUserDropdown(false)}
-                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
                             >
-                              <PlusSquare className="w-4 h-4 text-purple-400" />
+                              <PlusSquare className="w-4 h-4 text-indigo-600" />
                               Post Job / Internship
                             </Link>
                             <Link
                               to="/industry/applicants"
                               onClick={() => setShowUserDropdown(false)}
-                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
                             >
-                              <UserCheck className="w-4 h-4 text-emerald-400" />
+                              <UserCheck className="w-4 h-4 text-emerald-600" />
                               AI Candidate Ranking
                             </Link>
                             <Link
                               to="/industry/search-students"
                               onClick={() => setShowUserDropdown(false)}
-                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors"
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
                             >
-                              <Search className="w-4 h-4 text-amber-400" />
+                              <Search className="w-4 h-4 text-amber-500" />
                               Search Students
                             </Link>
                           </>
@@ -282,16 +281,16 @@ export default function Navbar() {
                           <Link
                             to="/admin/dashboard"
                             onClick={() => setShowUserDropdown(false)}
-                            className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors"
+                            className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
                           >
-                            <LayoutDashboard className="w-4 h-4 text-blue-400" />
+                            <LayoutDashboard className="w-4 h-4 text-blue-600" />
                             Admin Panel
                           </Link>
                         )}
                       </div>
 
                       {/* Sign Out Action */}
-                      <div className="pt-1 px-1 border-t border-slate-800 mt-1">
+                      <div className="pt-1 px-1 border-t border-slate-100 mt-1">
                         <button
                           onClick={() => {
                             setShowUserDropdown(false);
@@ -312,13 +311,13 @@ export default function Navbar() {
               <div className="flex items-center space-x-2">
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+                  className="px-4 py-2 text-xs font-bold text-slate-700 hover:text-blue-600 transition-colors"
                 >
                   Log In
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 rounded-xl shadow-lg shadow-blue-500/25 transition-all transform hover:-translate-y-0.5"
+                  className="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md shadow-blue-500/20 transition-all"
                 >
                   Get Started
                 </Link>

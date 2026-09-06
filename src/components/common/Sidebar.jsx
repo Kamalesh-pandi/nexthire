@@ -52,19 +52,20 @@ export default function Sidebar() {
 
 
   return (
-    <aside className="w-64 glass-panel border-r border-slate-700/50 hidden lg:flex flex-col justify-between py-6 px-4 shrink-0 min-h-[calc(100vh-4rem)]">
+    <aside className="w-64 bg-white border-r border-slate-200 hidden lg:flex flex-col justify-between py-6 px-4 shrink-0 min-h-[calc(100vh-4rem)]">
       <div className="space-y-6">
         
         {/* Role Header Badge */}
-        <div className="px-3 py-2 rounded-xl bg-slate-800/60 border border-slate-700/50 flex items-center gap-2.5">
-          <div className={`w-3 h-3 rounded-full ${
-            userRole === 'student' ? 'bg-blue-500 animate-ping' :
-            userRole === 'recruiter' ? 'bg-purple-500 animate-ping' : 'bg-emerald-500 animate-ping'
+        <div className="px-3 py-2 rounded-xl bg-blue-50 border border-blue-100 flex items-center gap-2.5">
+          <div className={`w-2.5 h-2.5 rounded-full ${
+            userRole === 'student' ? 'bg-blue-600' :
+            userRole === 'recruiter' ? 'bg-indigo-600' : 'bg-emerald-600'
           }`} />
-          <div className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+          <div className="text-xs font-bold text-blue-900 uppercase tracking-wider">
             {userRole === 'student' && '🎓 Student Workspace'}
             {userRole === 'recruiter' && '🏭 Industry Workspace'}
             {userRole === 'academician' && '👨‍🏫 Academician Portal'}
+            {userRole === 'admin' && '🛡️ Admin Control'}
           </div>
         </div>
 
@@ -77,10 +78,10 @@ export default function Sidebar() {
                 key={link.to}
                 to={link.to}
                 className={({ isActive }) =>
-                  `flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition-all ${
+                  `flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all ${
                     isActive
-                      ? 'bg-gradient-to-r from-blue-600/90 to-indigo-600/90 text-white shadow-lg shadow-blue-500/20 border border-blue-400/30'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                      ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20 font-semibold'
+                      : 'text-slate-600 hover:text-blue-700 hover:bg-blue-50/70'
                   }`
                 }
               >
@@ -89,7 +90,7 @@ export default function Sidebar() {
                   <span>{link.label}</span>
                 </div>
                 {link.badge && (
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-gradient-to-r from-amber-500 to-purple-500 text-white">
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-800 border border-blue-200">
                     {link.badge}
                   </span>
                 )}
@@ -100,12 +101,12 @@ export default function Sidebar() {
       </div>
 
       {/* AI Assistant Callout Box */}
-      <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-900/40 via-purple-900/30 to-slate-900/60 border border-indigo-500/30 text-xs text-slate-300 space-y-2">
-        <div className="flex items-center gap-2 text-indigo-300 font-semibold">
-          <Sparkles className="w-4 h-4 text-indigo-400" />
-          <span>Gemini 2.5 AI Powered</span>
+      <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-50 via-indigo-50/50 to-white border border-blue-200/80 text-xs text-slate-700 space-y-2">
+        <div className="flex items-center gap-2 text-blue-700 font-bold">
+          <Sparkles className="w-4 h-4 text-blue-600" />
+          <span>Gemini 2.5 AI Engine</span>
         </div>
-        <p className="text-[11px] leading-relaxed text-slate-400">
+        <p className="text-[11px] leading-relaxed text-slate-600">
           Real-time skill extraction, ATS scoring, candidate ranking, and curriculum alignment engine.
         </p>
       </div>

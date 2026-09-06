@@ -20,7 +20,7 @@ export default function FirebaseConfigModal({ isOpen, onClose }) {
     const configObj = {
       apiKey,
       projectId,
-      authDomain: authDomain || `${projectId}.firebaseapp.com`,
+      authDomain: authDomain || `${projectId}.appdomain.com`,
       storageBucket: storageBucket || `${projectId}.appspot.com`
     };
     localStorage.setItem('nexthire_firebase_config', JSON.stringify(configObj));
@@ -35,30 +35,30 @@ export default function FirebaseConfigModal({ isOpen, onClose }) {
     setSeedStatus(null);
     try {
       await seedFirestoreData();
-      setSeedStatus({ success: true, message: "Firestore database successfully seeded with collections: users, jobs, applications, courses, projects!" });
+      setSeedStatus({ success: true, message: "Cloud database successfully seeded with collections: users, jobs, applications, courses, projects!" });
     } catch (err) {
-      setSeedStatus({ success: false, message: err.message || "Failed to seed Firestore. Verify your Firebase config & security rules." });
+      setSeedStatus({ success: false, message: err.message || "Failed to seed database. Verify your cloud configuration & security rules." });
     } finally {
       setSeeding(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 overflow-y-auto">
-      <div className="w-full max-w-xl glass-panel rounded-3xl border border-slate-700/80 shadow-2xl p-6 sm:p-8 space-y-6 my-8 animate-in fade-in zoom-in-95">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto">
+      <div className="w-full max-w-xl bg-white rounded-3xl border border-slate-200 shadow-2xl p-6 sm:p-8 space-y-6 my-8 animate-in fade-in zoom-in-95">
         
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-700/60">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-200">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold border border-blue-200">
               <Database className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-extrabold text-slate-100">Firebase BaaS Connection</h2>
-              <p className="text-xs text-slate-400">Manage real-time Firestore database & Auth credentials</p>
+              <h2 className="text-xl font-extrabold text-slate-900">Cloud BaaS Connection</h2>
+              <p className="text-xs text-slate-500">Manage real-time cloud database & auth credentials</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800">
+          <button onClick={onClose} className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -66,23 +66,23 @@ export default function FirebaseConfigModal({ isOpen, onClose }) {
         {/* Live Status Indicator */}
         <div className={`p-4 rounded-2xl border flex items-center justify-between ${
           isLiveFirebaseConfigured
-            ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-300'
-            : 'bg-amber-950/20 border-amber-500/30 text-amber-300'
+            ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+            : 'bg-amber-50 border-amber-200 text-amber-800'
         }`}>
           <div className="flex items-center gap-3">
             {isLiveFirebaseConfigured ? (
-              <ShieldCheck className="w-6 h-6 text-emerald-400" />
+              <ShieldCheck className="w-6 h-6 text-emerald-600" />
             ) : (
-              <AlertCircle className="w-6 h-6 text-amber-400" />
+              <AlertCircle className="w-6 h-6 text-amber-600" />
             )}
             <div>
-              <h4 className="text-xs font-bold text-slate-100">
-                {isLiveFirebaseConfigured ? 'Live Firebase Backend Connected' : 'Running in Offline / Interactive Demo Mode'}
+              <h4 className="text-xs font-bold text-slate-900">
+                {isLiveFirebaseConfigured ? 'Live Cloud Backend Connected' : 'Running in Offline / Interactive Demo Mode'}
               </h4>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-600">
                 {isLiveFirebaseConfigured 
-                  ? `Connected to Firestore Project: ${projectId || 'Live Project'}`
-                  : 'You can test the platform immediately in demo mode, or add your Firebase keys below.'}
+                  ? `Connected to Database Project: ${projectId || 'Live Project'}`
+                  : 'You can test the platform immediately in demo mode, or add your Database keys below.'}
               </p>
             </div>
           </div>
@@ -90,87 +90,87 @@ export default function FirebaseConfigModal({ isOpen, onClose }) {
 
         {/* Seed Database Button */}
         {isLiveFirebaseConfigured && (
-          <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-indigo-400" /> Seed Firestore Database
+              <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-blue-600" /> Seed Cloud Database
               </span>
               <button
                 onClick={handleSeedDatabase}
                 disabled={seeding}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-500/20 flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 flex items-center gap-1.5 transition-colors disabled:opacity-50"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${seeding ? 'animate-spin' : ''}`} />
                 <span>Seed Collections</span>
               </button>
             </div>
-            <p className="text-[11px] text-slate-400">
-              Populates your Firestore project with sample data collections: <code className="text-indigo-300">users</code>, <code className="text-indigo-300">jobs</code>, <code className="text-indigo-300">applications</code>, <code className="text-indigo-300">courses</code>, <code className="text-indigo-300">projects</code>.
+            <p className="text-[11px] text-slate-600">
+              Populates your cloud database with sample data collections: <code className="text-blue-700 font-semibold bg-blue-50 px-1 rounded">users</code>, <code className="text-blue-700 font-semibold bg-blue-50 px-1 rounded">jobs</code>, <code className="text-blue-700 font-semibold bg-blue-50 px-1 rounded">applications</code>, <code className="text-blue-700 font-semibold bg-blue-50 px-1 rounded">courses</code>, <code className="text-blue-700 font-semibold bg-blue-50 px-1 rounded">projects</code>.
             </p>
             {seedStatus && (
-              <div className={`p-2.5 rounded-xl text-xs font-semibold ${seedStatus.success ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}>
+              <div className={`p-2.5 rounded-xl text-xs font-semibold ${seedStatus.success ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-red-50 text-red-800 border border-red-200'}`}>
                 {seedStatus.message}
               </div>
             )}
           </div>
         )}
 
-        {/* Form to enter Firebase Credentials */}
+        {/* Form to enter Database Credentials */}
         <form onSubmit={handleSaveCredentials} className="space-y-4">
-          <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
-            <Key className="w-4 h-4 text-amber-400" /> Custom Firebase API Configuration
+          <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+            <Key className="w-4 h-4 text-amber-600" /> Custom Database API Configuration
           </h4>
 
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1">Firebase API Key (apiKey)</label>
+            <label className="text-xs font-semibold text-slate-700 block mb-1">Database API Key (apiKey)</label>
             <input
               type="text"
               placeholder="AIzaSy..."
               value={apiKey}
               onChange={e => setApiKey(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 transition-colors"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">Project ID (projectId)</label>
+              <label className="text-xs font-semibold text-slate-700 block mb-1">Project ID (projectId)</label>
               <input
                 type="text"
                 placeholder="nexthire-sih26134"
                 value={projectId}
                 onChange={e => setProjectId(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 transition-colors"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">Auth Domain (authDomain)</label>
+              <label className="text-xs font-semibold text-slate-700 block mb-1">Auth Domain (authDomain)</label>
               <input
                 type="text"
-                placeholder="nexthire-sih26134.firebaseapp.com"
+                placeholder="nexthire-sih26134.cloud.com"
                 value={authDomain}
                 onChange={e => setAuthDomain(e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 transition-colors"
               />
             </div>
           </div>
 
-          <div className="flex justify-between items-center pt-3 border-t border-slate-700/60">
+          <div className="flex justify-between items-center pt-3 border-t border-slate-200">
             <a
-              href="https://console.firebase.google.com"
+              href="https://console.cloud.google.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-amber-400 hover:underline flex items-center gap-1"
+              className="text-xs text-blue-600 hover:text-blue-700 font-semibold hover:underline flex items-center gap-1"
             >
-              Open Firebase Console <ExternalLink className="w-3.5 h-3.5" />
+              Open Database Console <ExternalLink className="w-3.5 h-3.5" />
             </a>
 
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20"
+              className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20"
             >
-              {savedSuccess ? 'Saved! Reloading...' : 'Save & Connect Firebase'}
+              {savedSuccess ? 'Saved! Reloading...' : 'Save & Connect Database'}
             </button>
           </div>
         </form>

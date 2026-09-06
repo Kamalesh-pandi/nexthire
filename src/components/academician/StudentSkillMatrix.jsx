@@ -62,34 +62,34 @@ export default function StudentSkillMatrix({ students: propStudents = null }) {
   }).sort((a, b) => b.percent - a.percent);
 
   return (
-    <div className="glass-card rounded-3xl p-6 border border-slate-700/60 space-y-6">
+    <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
             Assigned Mentee Analytics
           </span>
-          <h3 className="text-lg font-bold text-slate-100 mt-2">Cohort Skill Deficit Matrix</h3>
+          <h3 className="text-lg font-bold text-slate-900 mt-2">Cohort Skill Deficit Matrix</h3>
         </div>
         <div className="text-right">
-          <span className="text-xl font-extrabold text-emerald-400">
+          <span className="text-xl font-extrabold text-blue-600">
             {totalStudents > 0 ? `${placementReadinessRate}%` : '0%'}
           </span>
-          <p className="text-[11px] text-slate-400">Placement Readiness</p>
+          <p className="text-[11px] text-slate-500 font-semibold">Placement Readiness</p>
         </div>
       </div>
 
       {loading ? (
-        <div className="py-8 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-          <RefreshCw className="w-4 h-4 animate-spin text-emerald-400" />
+        <div className="py-8 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
+          <RefreshCw className="w-4 h-4 animate-spin text-blue-600" />
           <span>Calculating live skill deficits for this mentor...</span>
         </div>
       ) : totalStudents === 0 ? (
         <div className="py-12 text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-slate-800 text-slate-400 mx-auto flex items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-slate-100 text-slate-500 mx-auto flex items-center justify-center border border-slate-200">
             <UserCheck className="w-6 h-6 text-slate-400" />
           </div>
-          <h4 className="text-sm font-bold text-slate-200">No Assigned Students for this Mentor</h4>
-          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+          <h4 className="text-sm font-bold text-slate-900">No Assigned Students for this Mentor</h4>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
             When students register and select you as their faculty mentor, their skill deficit matrix and ATS analytics will appear here.
           </p>
         </div>
@@ -100,16 +100,16 @@ export default function StudentSkillMatrix({ students: propStudents = null }) {
             {topMissingSkills.map((item, idx) => (
               <div key={idx} className="space-y-1.5">
                 <div className="flex justify-between text-xs">
-                  <span className="font-semibold text-slate-200 flex items-center gap-1.5">
-                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
                     {item.skill}
                   </span>
-                  <span className="text-slate-400 font-medium">
+                  <span className="text-slate-500 font-medium">
                     {item.count} Students ({item.percent}%)
                   </span>
                 </div>
 
-                <div className="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
                   <div
                     className="bg-gradient-to-r from-amber-500 to-red-500 h-full rounded-full transition-all duration-500"
                     style={{ width: `${item.percent}%` }}
@@ -119,11 +119,11 @@ export default function StudentSkillMatrix({ students: propStudents = null }) {
             ))}
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex items-start gap-3">
-            <Sparkles className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-3">
+            <Sparkles className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
             <div>
-              <h4 className="text-xs font-semibold text-slate-200">Mentor Action Item</h4>
-              <p className="text-xs text-slate-400 mt-1">
+              <h4 className="text-xs font-bold text-slate-900">Mentor Action Item</h4>
+              <p className="text-xs text-slate-600 mt-1">
                 {topMissingSkills[0]?.percent}% of your assigned mentees exhibit gaps in {topMissingSkills[0]?.skill}. Introducing a targeted practical lab module will boost their placement readiness.
               </p>
             </div>

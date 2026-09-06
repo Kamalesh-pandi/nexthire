@@ -202,36 +202,36 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
       
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto space-y-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 text-xs font-semibold border border-blue-500/30">
-          <Sparkles className="w-4 h-4 text-amber-300" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200">
+          <Sparkles className="w-4 h-4 text-blue-600" />
           <span>Google Gemini AI Resume Intelligence Engine</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-slate-100">AI Resume Analyzer & Scorer</h1>
-        <p className="text-xs text-slate-400">
-          Upload your resume to extract competencies, calculate your ATS score, and <span className="text-emerald-400 font-semibold">sync verified skills</span> to the Student Dashboard while keeping your student name, college, and department safely intact.
+        <h1 className="text-3xl font-extrabold text-slate-900">AI Resume Analyzer & Scorer</h1>
+        <p className="text-xs text-slate-600 font-medium">
+          Upload your resume to extract competencies, calculate your ATS score, and <span className="text-emerald-700 font-bold">sync verified skills</span> to the Student Dashboard while keeping your student name, college, and department safely intact.
         </p>
       </div>
 
       {/* Input Box: Drag & Drop or Paste */}
-      <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-700/80 space-y-6">
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
         
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-700/60">
-          <div className="flex items-center gap-2 text-xs text-slate-300 font-semibold">
-            <FileCheck2 className="w-4 h-4 text-blue-400" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-2 text-xs text-slate-800 font-bold">
+            <FileCheck2 className="w-4 h-4 text-blue-600" />
             <span>Select Resume Source</span>
           </div>
           <button
             type="button"
             onClick={handleLoadSample}
-            className="text-xs text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-1 font-semibold self-start"
+            className="text-xs text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1 font-bold self-start"
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Try Sample Student Resume
+            <Sparkles className="w-3.5 h-3.5 text-blue-600" /> Try Sample Student Resume
           </button>
         </div>
 
         {errorMessage && (
-          <div className="p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-300 text-xs font-medium flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+          <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
             <span>{errorMessage}</span>
           </div>
         )}
@@ -245,23 +245,23 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
             onDrop={handleDrop}
             className={`border-2 border-dashed rounded-2xl p-6 text-center transition-all flex flex-col items-center justify-center space-y-3 relative ${
               isDragging 
-                ? 'border-blue-400 bg-blue-950/30 scale-[1.01]' 
+                ? 'border-blue-500 bg-blue-50 scale-[1.01]' 
                 : file 
-                ? 'border-emerald-500/60 bg-emerald-950/20' 
-                : 'border-slate-700 hover:border-blue-500 bg-slate-900/40'
+                ? 'border-emerald-400 bg-emerald-50/50' 
+                : 'border-slate-300 hover:border-blue-500 bg-slate-50/50'
             }`}
           >
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${
-              file ? 'bg-emerald-500/20 text-emerald-400' : 'bg-blue-600/20 text-blue-400'
+              file ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-600'
             }`}>
               {file ? <FileText className="w-6 h-6" /> : <Upload className="w-6 h-6" />}
             </div>
 
             <div>
-              <p className="text-xs font-bold text-slate-200">
+              <p className="text-xs font-bold text-slate-900">
                 {file ? file.name : (isDragging ? 'Drop your resume file here' : 'Drag & Drop PDF or Browse')}
               </p>
-              <p className="text-[11px] text-slate-400 mt-1">
+              <p className="text-[11px] text-slate-500 font-medium mt-1">
                 {file ? `${(file.size / 1024).toFixed(1)} KB • Ready for extraction` : 'Supports .pdf, .txt, .md formats up to 10MB'}
               </p>
             </div>
@@ -270,12 +270,12 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
               <button
                 type="button"
                 onClick={() => setFile(null)}
-                className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-red-400 text-xs font-semibold flex items-center gap-1 border border-slate-700"
+                className="px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold flex items-center gap-1 border border-red-200"
               >
                 <X className="w-3.5 h-3.5" /> Remove File
               </button>
             ) : (
-              <label className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold cursor-pointer border border-slate-700 transition-colors shadow-sm">
+              <label className="px-4 py-2 rounded-xl bg-white hover:bg-blue-50 text-blue-700 text-xs font-bold cursor-pointer border border-blue-200 transition-colors shadow-2xs">
                 Choose Resume File
                 <input 
                   type="file" 
@@ -295,11 +295,11 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
           <div className="space-y-2 flex flex-col justify-between">
             <div>
               <div className="flex justify-between items-center mb-1">
-                <label className="text-xs font-semibold text-slate-300">Or Paste Resume Plaintext</label>
+                <label className="text-xs font-bold text-slate-700">Or Paste Resume Plaintext</label>
                 {pastedText && (
                   <button 
                     onClick={() => setPastedText('')}
-                    className="text-[11px] text-slate-400 hover:text-red-400"
+                    className="text-[11px] text-red-600 font-bold hover:underline"
                   >
                     Clear
                   </button>
@@ -310,7 +310,7 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
                 placeholder="Paste sections, skills, work experience, or project bullet points here..."
                 value={pastedText}
                 onChange={(e) => setPastedText(e.target.value)}
-                className="w-full bg-slate-800/80 border border-slate-700 rounded-2xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none shadow-inner"
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-600 resize-none shadow-2xs font-medium"
               />
             </div>
           </div>
@@ -319,19 +319,19 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
 
         {/* Progress status indicators during analysis */}
         {analyzing && (
-          <div className="p-4 rounded-2xl bg-blue-950/30 border border-blue-500/30 space-y-3 animate-in fade-in">
-            <div className="flex items-center justify-between text-xs text-slate-300 font-semibold">
+          <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 space-y-3 animate-in fade-in">
+            <div className="flex items-center justify-between text-xs text-slate-800 font-bold">
               <span className="flex items-center gap-2">
-                <RefreshCw className="w-4 h-4 animate-spin text-blue-400" />
+                <RefreshCw className="w-4 h-4 animate-spin text-blue-600" />
                 {analysisStep === 1 && "Extracting candidate information & text from document..."}
                 {analysisStep === 2 && "Evaluating ATS keywords & profile alignment..."}
                 {analysisStep === 3 && "Default-applying updates to Student Portal..."}
               </span>
-              <span className="text-blue-400 font-bold">Step {analysisStep} of 3</span>
+              <span className="text-blue-700 font-extrabold">Step {analysisStep} of 3</span>
             </div>
-            <div className="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+            <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
               <div 
-                className="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 h-full rounded-full transition-all duration-500"
+                className="bg-blue-600 h-full rounded-full transition-all duration-500"
                 style={{ width: `${(analysisStep / 3) * 100}%` }}
               />
             </div>
@@ -342,16 +342,16 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
           <button
             onClick={handleAnalyze}
             disabled={analyzing}
-            className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-extrabold text-xs shadow-2xl shadow-blue-500/30 flex items-center gap-2 transform hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+            className="px-8 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md shadow-blue-500/20 flex items-center gap-2 transform hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
           >
             {analyzing ? (
               <>
-                <RefreshCw className="w-4 h-4 animate-spin text-amber-300" />
+                <RefreshCw className="w-4 h-4 animate-spin text-white" />
                 <span>Analyzing & Auto-Updating Student Portal...</span>
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4 text-amber-300" />
+                <Sparkles className="w-4 h-4 text-white" />
                 <span>Analyze Resume & Default-Apply to Portal</span>
               </>
             )}
@@ -364,26 +364,26 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
           
           {/* Automatic Student Portal Sync Banner */}
-          <div className="glass-panel rounded-3xl p-5 border border-emerald-500/50 bg-gradient-to-r from-emerald-950/80 via-slate-900 to-teal-950/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl shadow-emerald-500/10 animate-in fade-in">
+          <div className="bg-white rounded-3xl p-5 border border-emerald-300 bg-gradient-to-r from-emerald-50 via-teal-50/40 to-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs animate-in fade-in">
             <div className="flex items-start sm:items-center gap-3.5">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 animate-pulse">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
-                  <h4 className="text-sm font-extrabold text-emerald-300">
+                  <h4 className="text-sm font-extrabold text-emerald-900">
                     Skills & ATS Score Successfully Synced!
                   </h4>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200">
                     Resume Verified
                   </span>
                 </div>
-                <p className="text-xs text-slate-300">
-                  Student: <span className="text-white font-bold">{currentUser?.name || 'Student Candidate'}</span> • 
-                  College: <span className="text-white font-bold">{currentUser?.collegeName || currentUser?.institution || 'IIT Delhi'}</span> • 
-                  Department: <span className="text-white font-bold">{currentUser?.departmentName || currentUser?.degree || 'Computer Science'}</span> • 
-                  ATS Score: <span className="text-emerald-400 font-bold">{analysisResult.resumeScore}/100</span> • 
-                  Skills: <span className="text-blue-400 font-bold">{analysisResult.technicalSkills?.length || 0} Verified</span>
+                <p className="text-xs text-slate-700 font-medium">
+                  Student: <span className="text-slate-900 font-bold">{currentUser?.name || 'Student Candidate'}</span> • 
+                  College: <span className="text-slate-900 font-bold">{currentUser?.collegeName || currentUser?.institution || 'IIT Delhi'}</span> • 
+                  Department: <span className="text-slate-900 font-bold">{currentUser?.departmentName || currentUser?.degree || 'Computer Science'}</span> • 
+                  ATS Score: <span className="text-emerald-700 font-extrabold">{analysisResult.resumeScore}/100</span> • 
+                  Skills: <span className="text-blue-700 font-extrabold">{analysisResult.technicalSkills?.length || 0} Verified</span>
                 </p>
               </div>
             </div>
@@ -391,14 +391,14 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
             <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
               <Link
                 to="/student/dashboard"
-                className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 flex items-center gap-1 transition-colors"
+                className="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-200 flex items-center gap-1 transition-colors"
               >
                 <span>Dashboard</span>
-                <ArrowRight className="w-3.5 h-3.5 text-blue-400" />
+                <ArrowRight className="w-3.5 h-3.5 text-blue-600" />
               </Link>
               <Link
                 to="/student/profile"
-                className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md shadow-emerald-500/20 flex items-center gap-1 transition-colors"
+                className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs flex items-center gap-1 transition-colors"
               >
                 <span>View Profile</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -407,13 +407,13 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
           </div>
 
           {/* Top Score Gauge & Summary Banner */}
-          <div className="glass-card rounded-3xl p-6 sm:p-8 border border-blue-500/40 bg-gradient-to-r from-blue-950/40 via-slate-900 to-purple-950/40 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-blue-200 shadow-xs grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
             
             {/* Score Ring */}
-            <div className="flex flex-col items-center justify-center p-4 bg-slate-900/90 rounded-2xl border border-slate-800">
+            <div className="flex flex-col items-center justify-center p-5 bg-blue-50/50 rounded-2xl border border-blue-100">
               <div className="relative w-28 h-28 flex items-center justify-center">
                 <svg className="w-full h-full transform -rotate-90">
-                  <circle cx="56" cy="56" r="48" stroke="currentColor" strokeWidth="8" className="text-slate-800" fill="transparent" />
+                  <circle cx="56" cy="56" r="48" stroke="currentColor" strokeWidth="8" className="text-slate-200" fill="transparent" />
                   <circle 
                     cx="56" 
                     cy="56" 
@@ -421,7 +421,7 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
                     stroke="currentColor" 
                     strokeWidth="8" 
                     className={`transition-all duration-1000 ${
-                      analysisResult.resumeScore >= 80 ? 'text-emerald-400' : analysisResult.resumeScore >= 65 ? 'text-blue-400' : 'text-amber-400'
+                      analysisResult.resumeScore >= 80 ? 'text-emerald-600' : analysisResult.resumeScore >= 65 ? 'text-blue-600' : 'text-amber-600'
                     }`} 
                     fill="transparent" 
                     strokeDasharray="301.5"
@@ -429,52 +429,52 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
                   />
                 </svg>
                 <div className="absolute flex flex-col items-center">
-                  <span className="text-3xl font-black text-white">{analysisResult.resumeScore}</span>
-                  <span className="text-[10px] font-bold text-slate-400">OUT OF 100</span>
+                  <span className="text-3xl font-black text-slate-900">{analysisResult.resumeScore}</span>
+                  <span className="text-[10px] font-bold text-slate-500">OUT OF 100</span>
                 </div>
               </div>
               <span className={`text-xs font-bold mt-2 ${
-                analysisResult.resumeScore >= 80 ? 'text-emerald-400' : analysisResult.resumeScore >= 65 ? 'text-blue-400' : 'text-amber-400'
+                analysisResult.resumeScore >= 80 ? 'text-emerald-700' : analysisResult.resumeScore >= 65 ? 'text-blue-700' : 'text-amber-700'
               }`}>
                 {analysisResult.resumeScore >= 80 ? 'Placement Ready 🎯' : analysisResult.resumeScore >= 65 ? 'Competitive Profile' : 'Needs Optimization'}
               </span>
-              <span className="text-[10px] text-slate-400 mt-0.5">{analysisResult.source || 'AI Verified'}</span>
+              <span className="text-[10px] text-slate-500 font-semibold mt-0.5">{analysisResult.source || 'AI Verified'}</span>
             </div>
 
             {/* Profile Executive Summary & Actions */}
             <div className="md:col-span-2 space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                   AI Executive Summary & Bio
                 </span>
 
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleCopyReport}
-                    className="px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1.5 border border-slate-700 transition-colors"
+                    className="px-3 py-1 rounded-xl bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 text-xs font-bold flex items-center gap-1.5 border border-slate-200 transition-colors"
                   >
-                    {copiedReport ? <CheckCheck className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedReport ? <CheckCheck className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{copiedReport ? 'Copied Report' : 'Copy Report'}</span>
                   </button>
                 </div>
               </div>
 
-              <p className="text-sm text-slate-200 leading-relaxed font-medium">
+              <p className="text-sm text-slate-700 leading-relaxed font-medium">
                 {analysisResult.summary}
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
-                <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs">
-                  <span className="text-[10px] text-slate-400 block font-medium">Extracted Name</span>
-                  <span className="font-bold text-slate-100">{analysisResult.name || currentUser?.name}</span>
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <span className="text-[10px] text-slate-500 block font-semibold">Extracted Name</span>
+                  <span className="font-extrabold text-slate-900">{analysisResult.name || currentUser?.name}</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs">
-                  <span className="text-[10px] text-slate-400 block font-medium">Institution</span>
-                  <span className="font-bold text-slate-100 truncate block">{analysisResult.institution || currentUser?.institution}</span>
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <span className="text-[10px] text-slate-500 block font-semibold">Institution</span>
+                  <span className="font-extrabold text-slate-900 truncate block">{analysisResult.institution || currentUser?.institution}</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs">
-                  <span className="text-[10px] text-slate-400 block font-medium">Degree</span>
-                  <span className="font-bold text-slate-100 truncate block">{analysisResult.degree || currentUser?.degree}</span>
+                <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                  <span className="text-[10px] text-slate-500 block font-semibold">Degree</span>
+                  <span className="font-extrabold text-slate-900 truncate block">{analysisResult.degree || currentUser?.degree}</span>
                 </div>
               </div>
             </div>
@@ -483,49 +483,49 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
 
           {/* ATS Score Category Breakdown */}
           {analysisResult.breakdown && (
-            <div className="glass-card rounded-3xl p-6 sm:p-8 border border-slate-700/60 space-y-4">
-              <h3 className="text-base font-bold text-slate-100 flex items-center gap-2 pb-3 border-b border-slate-700/50">
-                <BarChart2 className="w-5 h-5 text-indigo-400" /> ATS Metric Category Breakdown
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-4">
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
+                <BarChart2 className="w-5 h-5 text-blue-600" /> ATS Metric Category Breakdown
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 
-                <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-slate-400 font-medium">Keywords Density</span>
-                    <span className="text-blue-400 font-bold">{analysisResult.breakdown.keywordMatch}/30</span>
+                    <span className="text-slate-600 font-semibold">Keywords Density</span>
+                    <span className="text-blue-700 font-extrabold">{analysisResult.breakdown.keywordMatch}/30</span>
                   </div>
-                  <div className="w-full bg-slate-800 rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${(analysisResult.breakdown.keywordMatch / 30) * 100}%` }} />
+                  <div className="w-full bg-slate-200 rounded-full h-2">
+                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${(analysisResult.breakdown.keywordMatch / 30) * 100}%` }} />
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-slate-400 font-medium">ATS Formatting</span>
-                    <span className="text-emerald-400 font-bold">{analysisResult.breakdown.formatting}/20</span>
+                    <span className="text-slate-600 font-semibold">ATS Formatting</span>
+                    <span className="text-emerald-700 font-extrabold">{analysisResult.breakdown.formatting}/20</span>
                   </div>
-                  <div className="w-full bg-slate-800 rounded-full h-2">
-                    <div className="bg-emerald-500 h-2 rounded-full" style={{ width: `${(analysisResult.breakdown.formatting / 20) * 100}%` }} />
+                  <div className="w-full bg-slate-200 rounded-full h-2">
+                    <div className="bg-emerald-600 h-2 rounded-full" style={{ width: `${(analysisResult.breakdown.formatting / 20) * 100}%` }} />
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-slate-400 font-medium">Quantified Impact</span>
-                    <span className="text-purple-400 font-bold">{analysisResult.breakdown.impactMetrics}/25</span>
+                    <span className="text-slate-600 font-semibold">Quantified Impact</span>
+                    <span className="text-indigo-700 font-extrabold">{analysisResult.breakdown.impactMetrics}/25</span>
                   </div>
-                  <div className="w-full bg-slate-800 rounded-full h-2">
-                    <div className="bg-purple-500 h-2 rounded-full" style={{ width: `${(analysisResult.breakdown.impactMetrics / 25) * 100}%` }} />
+                  <div className="w-full bg-slate-200 rounded-full h-2">
+                    <div className="bg-indigo-600 h-2 rounded-full" style={{ width: `${(analysisResult.breakdown.impactMetrics / 25) * 100}%` }} />
                   </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
                   <div className="flex justify-between text-xs">
-                    <span className="text-slate-400 font-medium">Experience & Depth</span>
-                    <span className="text-amber-400 font-bold">{analysisResult.breakdown.experienceDepth}/25</span>
+                    <span className="text-slate-600 font-semibold">Experience & Depth</span>
+                    <span className="text-amber-700 font-extrabold">{analysisResult.breakdown.experienceDepth}/25</span>
                   </div>
-                  <div className="w-full bg-slate-800 rounded-full h-2">
-                    <div className="bg-amber-500 h-2 rounded-full" style={{ width: `${(analysisResult.breakdown.experienceDepth / 25) * 100}%` }} />
+                  <div className="w-full bg-slate-200 rounded-full h-2">
+                    <div className="bg-amber-600 h-2 rounded-full" style={{ width: `${(analysisResult.breakdown.experienceDepth / 25) * 100}%` }} />
                   </div>
                 </div>
 
@@ -536,27 +536,27 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
           {/* Technical & Soft Skills Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
-            <div className="glass-card rounded-3xl p-6 border border-slate-700/60 space-y-4">
-              <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2 pb-3 border-b border-slate-700/50">
-                <Zap className="w-4 h-4 text-blue-400" /> Extracted Technical Skills ({analysisResult.technicalSkills?.length || 0})
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-4">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
+                <Zap className="w-4 h-4 text-blue-600" /> Extracted Technical Skills ({analysisResult.technicalSkills?.length || 0})
               </h3>
               <div className="flex flex-wrap gap-2">
                 {analysisResult.technicalSkills?.map((skill, i) => (
-                  <span key={i} className="text-xs px-3 py-1.5 rounded-xl bg-blue-500/10 text-blue-300 border border-blue-500/30 font-semibold flex items-center gap-1.5">
-                    <Check className="w-3 h-3 text-blue-400" />
+                  <span key={i} className="text-xs px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 font-bold flex items-center gap-1.5">
+                    <Check className="w-3 h-3 text-blue-600" />
                     {skill}
                   </span>
                 ))}
               </div>
             </div>
 
-            <div className="glass-card rounded-3xl p-6 border border-slate-700/60 space-y-4">
-              <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2 pb-3 border-b border-slate-700/50">
-                <Award className="w-4 h-4 text-purple-400" /> Extracted Soft Skills & Leadership
+            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-4">
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
+                <Award className="w-4 h-4 text-indigo-600" /> Extracted Soft Skills & Leadership
               </h3>
               <div className="flex flex-wrap gap-2">
                 {analysisResult.softSkills?.map((skill, i) => (
-                  <span key={i} className="text-xs px-3 py-1.5 rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/30 font-semibold">
+                  <span key={i} className="text-xs px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold">
                     {skill}
                   </span>
                 ))}
@@ -569,14 +569,14 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Strengths */}
-            <div className="glass-card rounded-3xl p-6 border border-emerald-500/30 bg-emerald-950/10 space-y-4">
-              <h3 className="text-sm font-bold text-emerald-400 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4" /> Key Resume Strengths
+            <div className="bg-white rounded-3xl p-6 border border-emerald-200 bg-emerald-50/30 space-y-4 shadow-xs">
+              <h3 className="text-sm font-bold text-emerald-800 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Key Resume Strengths
               </h3>
-              <ul className="space-y-2 text-xs text-slate-300">
+              <ul className="space-y-2 text-xs text-slate-700 font-medium">
                 {analysisResult.strengths?.map((str, idx) => (
                   <li key={idx} className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mt-1.5 shrink-0" />
                     <span>{str}</span>
                   </li>
                 ))}
@@ -584,14 +584,14 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
             </div>
 
             {/* Weaknesses */}
-            <div className="glass-card rounded-3xl p-6 border border-amber-500/30 bg-amber-950/10 space-y-4">
-              <h3 className="text-sm font-bold text-amber-400 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4" /> Areas for Improvement
+            <div className="bg-white rounded-3xl p-6 border border-amber-200 bg-amber-50/30 space-y-4 shadow-xs">
+              <h3 className="text-sm font-bold text-amber-800 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-600" /> Areas for Improvement
               </h3>
-              <ul className="space-y-2 text-xs text-slate-300">
+              <ul className="space-y-2 text-xs text-slate-700 font-medium">
                 {analysisResult.weaknesses?.map((wk, idx) => (
                   <li key={idx} className="flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-600 mt-1.5 shrink-0" />
                     <span>{wk}</span>
                   </li>
                 ))}
@@ -601,14 +601,14 @@ ${(analysisResult.atsSuggestions || []).map(a => `- ${a}`).join('\n')}
           </div>
 
           {/* ATS Actionable Improvement Suggestions */}
-          <div className="glass-card rounded-3xl p-6 sm:p-8 border border-slate-700/60 space-y-4">
-            <h3 className="text-base font-bold text-slate-100 flex items-center gap-2 pb-3 border-b border-slate-700/50">
-              <Sparkles className="w-5 h-5 text-indigo-400" /> Actionable ATS Recommendations
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-4">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2 pb-3 border-b border-slate-100">
+              <Sparkles className="w-5 h-5 text-blue-600" /> Actionable ATS Recommendations
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {analysisResult.atsSuggestions?.map((sugg, idx) => (
-                <div key={idx} className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-300 space-y-2">
-                  <span className="text-[10px] font-bold text-indigo-400 uppercase">Priority Action 0{idx + 1}</span>
+                <div key={idx} className="p-4 rounded-2xl bg-blue-50/60 border border-blue-200 text-xs text-slate-800 space-y-2">
+                  <span className="text-[10px] font-bold text-blue-700 uppercase">Priority Action 0{idx + 1}</span>
                   <p className="leading-relaxed font-medium">{sugg}</p>
                 </div>
               ))}

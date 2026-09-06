@@ -62,24 +62,24 @@ export default function ApplicantsList() {
       
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
             Recruiter Intelligence
           </span>
-          <h1 className="text-2xl font-extrabold text-slate-100 mt-1">AI Candidate Ranking & Evaluation</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 mt-1">AI Candidate Ranking & Evaluation</h1>
         </div>
       </div>
 
       {/* Select Job & Status Filter */}
-      <div className="glass-panel rounded-2xl p-4 border border-slate-700/80 flex flex-col md:flex-row gap-4 items-center justify-between">
+      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex flex-col md:flex-row gap-4 items-center justify-between">
         <div className="w-full md:w-1/2 space-y-1">
-          <label className="text-xs font-semibold text-slate-300">Select Job Posting</label>
+          <label className="text-xs font-semibold text-slate-700">Select Job Posting</label>
           {loading ? (
-            <div className="text-xs text-slate-400 py-2">Loading job listings...</div>
+            <div className="text-xs text-slate-500 py-2">Loading job listings...</div>
           ) : (
             <select
               value={selectedJobId}
               onChange={(e) => setSelectedJobId(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-purple-500"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2 text-xs text-slate-900 focus:outline-none focus:bg-white focus:border-blue-600 transition-colors"
             >
               {jobs.length === 0 ? (
                 <option value="">No Jobs Found in Database</option>
@@ -97,10 +97,10 @@ export default function ApplicantsList() {
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
                 statusFilter === st
-                  ? 'bg-purple-600 text-white shadow-md'
-                  : 'bg-slate-800 text-slate-400 hover:text-white'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-slate-100 text-slate-600 hover:text-slate-900'
               }`}
             >
               {st}
@@ -111,13 +111,13 @@ export default function ApplicantsList() {
 
       {/* Job Required Skills Pill Summary */}
       {selectedJob && (
-        <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center gap-3">
-          <Sparkles className="w-5 h-5 text-amber-300 shrink-0" />
+        <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 flex items-center gap-3">
+          <Sparkles className="w-5 h-5 text-amber-500 shrink-0" />
           <div className="flex-1 space-y-1">
-            <span className="text-xs font-bold text-slate-200">AI Match Criteria for "{selectedJob.title}":</span>
+            <span className="text-xs font-bold text-slate-900">AI Match Criteria for "{selectedJob.title}":</span>
             <div className="flex flex-wrap gap-1.5">
               {selectedJob.skillsRequired && selectedJob.skillsRequired.map((skill, i) => (
-                <span key={i} className="text-xs px-2.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                <span key={i} className="text-xs px-2.5 py-0.5 rounded bg-white text-blue-800 border border-blue-200 font-semibold shadow-xs">
                   {skill}
                 </span>
               ))}
@@ -129,11 +129,11 @@ export default function ApplicantsList() {
       {/* Ranked Candidate List */}
       <div className="space-y-4">
         {loading ? (
-          <div className="glass-panel rounded-3xl p-8 text-center text-slate-400 text-xs">
-            Loading candidate applications from Firestore...
+          <div className="bg-white rounded-3xl p-8 text-center text-slate-500 text-xs border border-slate-200">
+            Loading candidate applications from database...
           </div>
         ) : filteredCandidates.length === 0 ? (
-          <div className="glass-panel rounded-3xl p-8 text-center text-slate-400 text-xs">
+          <div className="bg-white rounded-3xl p-8 text-center text-slate-500 text-xs border border-slate-200">
             No candidate applications matching criteria for this role.
           </div>
         ) : (

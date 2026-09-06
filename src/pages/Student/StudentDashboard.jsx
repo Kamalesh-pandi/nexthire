@@ -242,25 +242,25 @@ export default function StudentDashboard() {
     <div className="space-y-8 pb-12">
       
       {/* Banner */}
-      <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-blue-500/30 relative overflow-hidden bg-gradient-to-r from-blue-950/40 via-slate-900/80 to-purple-950/40">
+      <div className="rounded-3xl p-6 sm:p-8 border border-blue-200 relative overflow-hidden bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white shadow-lg shadow-blue-500/15">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
+            <span className="text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-white/20 text-white border border-white/30 backdrop-blur-xs">
               🎓 Student Workspace
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
               Welcome back, {currentUser?.name || 'Student Candidate'}!
             </h1>
-            <p className="text-xs text-slate-300 max-w-xl">
+            <p className="text-xs text-blue-100 max-w-xl font-medium">
               {currentUser?.collegeName || currentUser?.institution || 'IIT Delhi'} • {currentUser?.departmentName || currentUser?.degree || currentUser?.department || 'B.Tech CSE'}
             </p>
           </div>
 
           <Link
             to="/student/resume-analyzer"
-            className="self-start md:self-center px-5 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs shadow-xl shadow-blue-500/30 flex items-center gap-2 transform hover:-translate-y-0.5 transition-all"
+            className="self-start md:self-center px-5 py-3 rounded-2xl bg-white hover:bg-blue-50 text-blue-700 font-bold text-xs shadow-md flex items-center gap-2 transform hover:-translate-y-0.5 transition-all"
           >
-            <Sparkles className="w-4 h-4 text-amber-300" />
+            <Sparkles className="w-4 h-4 text-blue-600" />
             <span>Launch AI Resume Analyzer</span>
           </Link>
         </div>
@@ -269,9 +269,9 @@ export default function StudentDashboard() {
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
-        <div className="glass-card rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:shadow-md transition-all flex items-center justify-between">
           <div>
-            <p className="text-xs text-slate-400 font-medium">ATS Resume Score</p>
+            <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">ATS Resume Score</p>
             {(() => {
               const currentScore = currentUser?.resumeScore ?? calculateInitialATSScore(currentUser?.skills, currentUser?.departmentName, currentUser?.collegeName);
               const scoreStatus = currentUser?.resumeFileName 
@@ -279,56 +279,54 @@ export default function StudentDashboard() {
                 : (currentScore >= 80 ? 'Strong Skill Baseline' : currentScore >= 65 ? 'Moderate Stack' : 'Initial Evaluation');
               return (
                 <>
-                  <h3 className="text-2xl font-black text-blue-400 mt-1">{currentScore}/100</h3>
-                  <span className="text-[10px] text-emerald-400 flex items-center gap-1 mt-1">
+                  <h3 className="text-2xl font-black text-slate-900 mt-1">{currentScore}/100</h3>
+                  <span className="text-[10px] text-blue-600 font-bold flex items-center gap-1 mt-1">
                     <TrendingUp className="w-3 h-3" /> {scoreStatus}
                   </span>
                 </>
               );
             })()}
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center font-bold">
             <Award className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="glass-card rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:shadow-md transition-all flex items-center justify-between">
           <div>
-            <p className="text-xs text-slate-400 font-medium">Active Applications</p>
-            <h3 className="text-2xl font-black text-purple-400 mt-1">{applications.length}</h3>
-            <span className="text-[10px] text-purple-300 mt-1 block">Live Firestore Database Records</span>
+            <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Active Applications</p>
+            <h3 className="text-2xl font-black text-slate-900 mt-1">{applications.length}</h3>
+            <span className="text-[10px] text-indigo-600 font-bold mt-1 block">Live Database Records</span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold">
+          <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center font-bold">
             <Briefcase className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="glass-card rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:shadow-md transition-all flex items-center justify-between">
           <div>
-            <p className="text-xs text-slate-400 font-medium">Acquired Skill Badges</p>
-            <h3 className="text-2xl font-black text-emerald-400 mt-1">{currentUser?.skills?.length || 0}</h3>
-            <span className="text-[10px] text-slate-400 mt-1 block">Verified From Resume</span>
+            <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Acquired Skill Badges</p>
+            <h3 className="text-2xl font-black text-slate-900 mt-1">{currentUser?.skills?.length || 0}</h3>
+            <span className="text-[10px] text-emerald-600 font-bold mt-1 block">Verified From Profile</span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-bold">
             <CheckCircle2 className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="glass-card rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:shadow-md transition-all flex items-center justify-between">
           <div>
-            <p className="text-xs text-slate-400 font-medium">Target Job Match</p>
-            <h3 className={`text-2xl font-black mt-1 ${
-              matchPercentage >= 80 ? 'text-emerald-400' : matchPercentage >= 50 ? 'text-amber-400' : 'text-red-400'
-            }`}>
+            <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Target Job Match</p>
+            <h3 className="text-2xl font-black text-slate-900 mt-1">
               {matchPercentage}%
             </h3>
-            <span className={`text-[10px] font-semibold mt-1 block truncate max-w-[140px] ${
-              matchPercentage >= 80 ? 'text-emerald-300' : 'text-amber-300'
+            <span className={`text-[10px] font-bold mt-1 block truncate max-w-[140px] ${
+              matchPercentage >= 80 ? 'text-emerald-600' : 'text-amber-600'
             }`}>
               {activeJob.title}
             </span>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center font-bold">
             <Sparkles className="w-6 h-6" />
           </div>
         </div>
@@ -360,17 +358,17 @@ export default function StudentDashboard() {
           {/* Active Application Status Tracker */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-                <Briefcase className="w-5 h-5 text-blue-400" />
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <Briefcase className="w-5 h-5 text-blue-600" />
                 Track Application Status
               </h3>
-              <Link to="/student/jobs" className="text-xs text-blue-400 hover:underline font-semibold">
+              <Link to="/student/jobs" className="text-xs text-blue-600 hover:underline font-bold">
                 View All Opportunities →
               </Link>
             </div>
 
             {loading ? (
-              <div className="p-6 text-center text-xs text-slate-400 glass-panel rounded-2xl border border-slate-700/80">
+              <div className="p-6 text-center text-xs text-slate-500 bg-white rounded-2xl border border-slate-200 shadow-xs">
                 Fetching applications from database...
               </div>
             ) : (
@@ -387,24 +385,24 @@ export default function StudentDashboard() {
         <div className="space-y-6">
           
           {/* Assigned Academic Mentor Card */}
-          <div className="glass-card rounded-3xl p-6 border border-emerald-500/30 bg-gradient-to-br from-emerald-950/30 to-slate-900 space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-700/50 pb-2.5">
-              <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-                <GraduationCap className="w-4 h-4" /> Assigned Academic Mentor
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+              <span className="text-[11px] font-bold text-blue-700 uppercase tracking-wider flex items-center gap-1.5">
+                <GraduationCap className="w-4 h-4 text-blue-600" /> Assigned Academic Mentor
               </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                 Verified Faculty
               </span>
             </div>
 
             <div className="space-y-1">
-              <h4 className="text-base font-extrabold text-slate-100">
+              <h4 className="text-base font-extrabold text-slate-900">
                 {currentUser?.mentorName || 'Prof. Rajesh Kumar'}
               </h4>
-              <p className="text-xs text-slate-400 font-mono">
+              <p className="text-xs text-slate-500 font-mono">
                 {currentUser?.mentorEmail || 'rajesh.prof@iitd.ac.in'}
               </p>
-              <p className="text-[11px] text-emerald-300 font-medium">
+              <p className="text-[11px] text-slate-600 font-medium">
                 {currentUser?.departmentName || 'Dept of Computer Science'} • {currentUser?.collegeName || currentUser?.institution || 'IIT Delhi'}
               </p>
             </div>
@@ -414,22 +412,22 @@ export default function StudentDashboard() {
                 name: currentUser?.mentorName || 'Prof. Rajesh Kumar',
                 role: 'Academic Mentor'
               })}
-              className="w-full mt-2 py-2 rounded-xl bg-emerald-600/30 hover:bg-emerald-600 text-emerald-200 font-bold text-xs border border-emerald-500/40 flex items-center justify-center gap-2 transition-colors"
+              className="w-full mt-2 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs border border-blue-200 flex items-center justify-center gap-2 transition-colors"
             >
               <span>Contact Mentor</span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-emerald-300" />
+              <ArrowUpRight className="w-3.5 h-3.5 text-blue-600" />
             </button>
           </div>
 
-          <div className="glass-card rounded-3xl p-6 border border-slate-700/60 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-700/50">
-              <h4 className="text-sm font-bold text-slate-200">Verified Technical Skills</h4>
-              <Link to="/student/profile" className="text-xs text-blue-400 hover:underline font-medium">Edit</Link>
+          <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h4 className="text-sm font-bold text-slate-900">Verified Technical Skills</h4>
+              <Link to="/student/profile" className="text-xs text-blue-600 hover:underline font-bold">Edit</Link>
             </div>
 
             <div className="flex flex-wrap gap-2">
               {(currentUser?.skills || []).map((skill, i) => (
-                <span key={i} className="text-xs px-3 py-1.5 rounded-xl bg-slate-800 text-slate-200 border border-slate-700/70 font-medium">
+                <span key={i} className="text-xs px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 border border-blue-200/80 font-semibold">
                   {skill}
                 </span>
               ))}
@@ -437,19 +435,19 @@ export default function StudentDashboard() {
           </div>
 
           {/* AI Career Mentor Spotlight Card */}
-          <div className="glass-card rounded-3xl p-6 border border-indigo-500/30 bg-gradient-to-br from-indigo-950/40 to-slate-900 space-y-4">
-            <div className="flex items-center gap-2 text-indigo-300 font-bold text-sm">
-              <Sparkles className="w-5 h-5 text-amber-300" />
+          <div className="rounded-3xl p-6 border border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50/70 shadow-xs space-y-4">
+            <div className="flex items-center gap-2 text-blue-800 font-bold text-sm">
+              <Sparkles className="w-5 h-5 text-blue-600" />
               <span>AI Career Insight</span>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Based on your React.js and Python skillset, recruiters in <span className="text-white font-semibold">Bengaluru</span> are offering a 28% higher stipend for candidates with <span className="text-amber-300 font-semibold">PyTorch & Docker</span> experience.
+            <p className="text-xs text-slate-700 leading-relaxed font-medium">
+              Based on your React.js and Python skillset, recruiters in <span className="text-slate-900 font-bold">Bengaluru</span> are offering a 28% higher stipend for candidates with <span className="text-blue-700 font-bold">PyTorch & Docker</span> experience.
             </p>
 
             <Link
               to="/student/resume-analyzer"
-              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 transition-colors"
+              className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 transition-colors"
             >
               <span>Re-analyze Resume</span>
               <ArrowUpRight className="w-4 h-4" />

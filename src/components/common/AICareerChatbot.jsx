@@ -32,8 +32,8 @@ function FormattedMessage({ text }) {
           const code = part.substring(firstLineEnd + 1, part.length - 3).trim();
 
           return (
-            <div key={partIdx} className="my-2.5 rounded-xl overflow-hidden border border-slate-700 bg-slate-950 font-mono text-[11px]">
-              <div className="flex items-center justify-between px-3 py-1.5 bg-slate-900 border-b border-slate-800 text-slate-400">
+            <div key={partIdx} className="my-2.5 rounded-xl overflow-hidden border border-slate-700 bg-slate-900 font-mono text-[11px]">
+              <div className="flex items-center justify-between px-3 py-1.5 bg-slate-950 border-b border-slate-800 text-slate-400">
                 <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase text-blue-400">
                   <Terminal className="w-3 h-3" /> {lang}
                 </span>
@@ -73,7 +73,7 @@ function FormattedMessage({ text }) {
               // Header 3
               if (trimmed.startsWith('### ')) {
                 return (
-                  <h3 key={lineIdx} className="text-[13px] font-bold text-blue-300 pt-1 flex items-center gap-1.5 border-b border-slate-700/40 pb-1">
+                  <h3 key={lineIdx} className="text-[13px] font-bold text-blue-700 pt-1 flex items-center gap-1.5 border-b border-slate-200 pb-1">
                     {parseInlineMarkdown(trimmed.replace('### ', ''))}
                   </h3>
                 );
@@ -82,7 +82,7 @@ function FormattedMessage({ text }) {
               // Header 4
               if (trimmed.startsWith('#### ')) {
                 return (
-                  <h4 key={lineIdx} className="text-xs font-bold text-amber-300 pt-1">
+                  <h4 key={lineIdx} className="text-xs font-bold text-amber-700 pt-1">
                     {parseInlineMarkdown(trimmed.replace('#### ', ''))}
                   </h4>
                 );
@@ -91,7 +91,7 @@ function FormattedMessage({ text }) {
               // Blockquote / Callout
               if (trimmed.startsWith('> ')) {
                 return (
-                  <div key={lineIdx} className="pl-3 py-1 my-1 border-l-2 border-indigo-400 bg-indigo-950/30 rounded-r-lg text-slate-300 italic text-[11.5px]">
+                  <div key={lineIdx} className="pl-3 py-1 my-1 border-l-2 border-blue-600 bg-blue-50 rounded-r-lg text-slate-700 italic text-[11.5px]">
                     {parseInlineMarkdown(trimmed.replace(/^>\s*/, ''))}
                   </div>
                 );
@@ -100,8 +100,8 @@ function FormattedMessage({ text }) {
               // Bullet List (- or *)
               if (/^[-*]\s+/.test(trimmed)) {
                 return (
-                  <div key={lineIdx} className="flex items-start gap-2 pl-1.5 text-slate-200">
-                    <span className="text-blue-400 font-bold shrink-0 mt-0.5">•</span>
+                  <div key={lineIdx} className="flex items-start gap-2 pl-1.5 text-slate-700">
+                    <span className="text-blue-600 font-bold shrink-0 mt-0.5">•</span>
                     <span>{parseInlineMarkdown(trimmed.replace(/^[-*]\s+/, ''))}</span>
                   </div>
                 );
@@ -111,8 +111,8 @@ function FormattedMessage({ text }) {
               if (/^\d+\.\s+/.test(trimmed)) {
                 const match = trimmed.match(/^(\d+)\.\s+(.*)/);
                 return (
-                  <div key={lineIdx} className="flex items-start gap-2 pl-1.5 text-slate-200">
-                    <span className="text-purple-400 font-bold shrink-0 text-[10px] mt-0.5 px-1 rounded bg-purple-500/10 border border-purple-500/20">
+                  <div key={lineIdx} className="flex items-start gap-2 pl-1.5 text-slate-700">
+                    <span className="text-blue-700 font-bold shrink-0 text-[10px] mt-0.5 px-1.5 py-0.5 rounded bg-blue-50 border border-blue-200">
                       {match[1]}
                     </span>
                     <span>{parseInlineMarkdown(match[2])}</span>
@@ -122,7 +122,7 @@ function FormattedMessage({ text }) {
 
               // Normal Paragraph
               return (
-                <p key={lineIdx} className="text-slate-200 leading-relaxed">
+                <p key={lineIdx} className="text-slate-800 leading-relaxed">
                   {parseInlineMarkdown(trimmed)}
                 </p>
               );
@@ -141,21 +141,21 @@ function parseInlineMarkdown(text) {
   return segments.map((seg, i) => {
     if (seg.startsWith('`') && seg.endsWith('`')) {
       return (
-        <code key={i} className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-700/80 text-amber-300 font-mono text-[10.5px]">
+        <code key={i} className="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-300 text-blue-700 font-mono text-[10.5px]">
           {seg.slice(1, -1)}
         </code>
       );
     }
     if (seg.startsWith('**') && seg.endsWith('**')) {
       return (
-        <strong key={i} className="font-bold text-white">
+        <strong key={i} className="font-bold text-slate-900">
           {seg.slice(2, -2)}
         </strong>
       );
     }
     if (seg.startsWith('*') && seg.endsWith('*')) {
       return (
-        <em key={i} className="italic text-slate-300">
+        <em key={i} className="italic text-slate-600">
           {seg.slice(1, -1)}
         </em>
       );
@@ -315,17 +315,17 @@ export default function AICareerChatbot() {
       {!isOpen ? (
         <button
           onClick={() => setIsOpen(true)}
-          className="group relative flex items-center gap-2.5 px-4.5 py-3.5 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white font-semibold text-sm shadow-2xl shadow-blue-500/40 hover:scale-105 active:scale-95 transition-all duration-200 border border-white/20"
+          className="group relative flex items-center gap-2.5 px-5 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-xl shadow-blue-500/25 hover:scale-105 active:scale-95 transition-all duration-200 border border-blue-500/30"
         >
           <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+            <Sparkles className="w-4 h-4 text-white animate-pulse" />
           </div>
           <span className="tracking-wide">AI Career Advisor</span>
-          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-400 border-2 border-slate-900 shadow-sm" />
+          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-xs" />
         </button>
       ) : (
         <div 
-          className={`glass-panel rounded-3xl shadow-2xl flex flex-col border border-slate-700/80 overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 ${
+          className={`bg-white rounded-3xl shadow-2xl flex flex-col border border-slate-200 overflow-hidden transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 ${
             isExpanded 
               ? 'w-[90vw] sm:w-[580px] h-[680px] max-h-[92vh]' 
               : 'w-[90vw] sm:w-[410px] h-[540px]'
@@ -333,20 +333,20 @@ export default function AICareerChatbot() {
         >
           
           {/* Header */}
-          <div className="p-3.5 bg-slate-900/95 border-b border-slate-700/60 flex items-center justify-between backdrop-blur-md">
+          <div className="p-3.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+              <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
                 <Bot className="w-5 h-5" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h3 className="text-sm font-bold text-slate-100">NextHire AI Mentor</h3>
+                  <h3 className="text-sm font-bold text-white">NextHire AI Mentor</h3>
                   <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold border ${
                     hasLiveKey 
                       ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' 
                       : 'bg-blue-500/20 text-blue-300 border-blue-500/30'
                   }`}>
-                    {hasLiveKey ? 'Gemini Live' : 'AI Offline Engine'}
+                    {hasLiveKey ? 'Gemini Live' : 'AI Engine'}
                   </span>
                 </div>
                 <p className="text-[10.5px] text-emerald-400 flex items-center gap-1 font-medium">
@@ -359,7 +359,7 @@ export default function AICareerChatbot() {
             <div className="flex items-center gap-1">
               <button
                 onClick={handleResetChat}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                 title="Restart Chat Session"
               >
                 <RefreshCw className="w-4 h-4" />
@@ -367,7 +367,7 @@ export default function AICareerChatbot() {
 
               <button
                 onClick={() => setShowKeyModal(!showKeyModal)}
-                className={`p-1.5 rounded-lg transition-colors ${showKeyModal ? 'text-amber-300 bg-slate-800' : 'text-slate-400 hover:text-amber-300 hover:bg-slate-800'}`}
+                className={`p-1.5 rounded-lg transition-colors ${showKeyModal ? 'text-amber-400 bg-slate-800' : 'text-slate-300 hover:text-amber-300 hover:bg-slate-800'}`}
                 title="Configure Google Gemini API Key"
               >
                 <Key className="w-4 h-4" />
@@ -375,7 +375,7 @@ export default function AICareerChatbot() {
 
               <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors hidden sm:block"
+                className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors hidden sm:block"
                 title={isExpanded ? "Collapse View" : "Expand View"}
               >
                 {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -383,7 +383,7 @@ export default function AICareerChatbot() {
 
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                 title="Close Chatbot"
               >
                 <X className="w-4 h-4" />
@@ -393,14 +393,14 @@ export default function AICareerChatbot() {
 
           {/* Gemini API Key Configuration Panel */}
           {showKeyModal && (
-            <div className="p-3.5 bg-slate-950 border-b border-slate-800 animate-in slide-in-from-top-2 space-y-2.5">
+            <div className="p-3.5 bg-slate-900 border-b border-slate-800 space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
                   <Key className="w-3.5 h-3.5" /> Google Gemini API Connection
                 </span>
                 <span className="text-[10px] text-slate-400">Gemini 2.0 / 1.5 Flash</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-snug">
+              <p className="text-[11px] text-slate-300 leading-snug">
                 Optionally connect your personal Google Gemini API key to enable live cloud multi-turn reasoning.
               </p>
               <form onSubmit={handleTestAndSaveKey} className="space-y-2">
@@ -410,12 +410,12 @@ export default function AICareerChatbot() {
                     placeholder="Paste AIzaSy... key"
                     value={apiKeyInput}
                     onChange={(e) => setApiKeyInput(e.target.value)}
-                    className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 font-mono"
+                    className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-amber-400 font-mono"
                   />
                   <button
                     type="submit"
                     disabled={testingKey}
-                    className="px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white font-bold text-xs shadow-md shadow-amber-600/20 shrink-0"
+                    className="px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white font-bold text-xs shadow-md shrink-0"
                   >
                     {testingKey ? "Testing..." : "Test & Save"}
                   </button>
@@ -430,24 +430,24 @@ export default function AICareerChatbot() {
           )}
 
           {/* Chat Messages */}
-          <div className="flex-1 p-3.5 sm:p-4 overflow-y-auto space-y-3.5 scrollbar-thin">
+          <div className="flex-1 p-3.5 sm:p-4 overflow-y-auto space-y-3.5 bg-slate-50 scrollbar-thin">
             {messages.map((msg, idx) => (
               <div
                 key={idx}
                 className={`flex gap-2.5 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.sender === 'ai' && (
-                  <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 shrink-0 flex items-center justify-center text-white text-[11px] font-bold shadow-md shadow-indigo-600/20 mt-0.5">
+                  <div className="w-7 h-7 rounded-xl bg-blue-600 shrink-0 flex items-center justify-center text-white text-[11px] font-bold shadow-xs mt-0.5">
                     AI
                   </div>
                 )}
                 
                 <div className={`max-w-[88%] space-y-2.5`}>
                   <div
-                    className={`p-3.5 rounded-2xl leading-relaxed shadow-sm ${
+                    className={`p-3.5 rounded-2xl leading-relaxed shadow-xs ${
                       msg.sender === 'user'
-                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-br-none font-medium'
-                        : 'bg-slate-800/90 text-slate-200 border border-slate-700/70 rounded-bl-none'
+                        ? 'bg-blue-600 text-white rounded-br-none font-medium'
+                        : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none'
                     }`}
                   >
                     {msg.sender === 'user' ? (
@@ -464,9 +464,9 @@ export default function AICareerChatbot() {
                         <button
                           key={sIdx}
                           onClick={() => handleSendMessage(sug)}
-                          className="text-[10px] px-2.5 py-1 rounded-full bg-slate-800/90 text-blue-300 hover:bg-blue-600 hover:text-white border border-blue-500/30 transition-all flex items-center gap-1 shadow-sm active:scale-95"
+                          className="text-[10px] px-2.5 py-1 rounded-full bg-white text-blue-700 hover:bg-blue-600 hover:text-white border border-blue-200 transition-all flex items-center gap-1 shadow-xs active:scale-95 font-medium"
                         >
-                          <ChevronRight className="w-3 h-3 text-blue-400" />
+                          <ChevronRight className="w-3 h-3 text-blue-600" />
                           <span>{sug}</span>
                         </button>
                       ))}
@@ -475,31 +475,31 @@ export default function AICareerChatbot() {
                 </div>
 
                 {msg.sender === 'user' && (
-                  <div className="w-7 h-7 rounded-xl bg-slate-700 shrink-0 flex items-center justify-center text-white text-[11px] mt-0.5 shadow-sm">
-                    <User className="w-4 h-4 text-slate-200" />
+                  <div className="w-7 h-7 rounded-xl bg-slate-200 shrink-0 flex items-center justify-center text-slate-700 text-[11px] mt-0.5 shadow-xs">
+                    <User className="w-4 h-4 text-slate-600" />
                   </div>
                 )}
               </div>
             ))}
 
             {loading && (
-              <div className="flex items-center gap-2.5 text-slate-400 text-xs py-2 pl-2">
-                <div className="w-7 h-7 rounded-xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+              <div className="flex items-center gap-2.5 text-slate-500 text-xs py-2 pl-2">
+                <div className="w-7 h-7 rounded-xl bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-600">
                   <Sparkles className="w-3.5 h-3.5 animate-spin" />
                 </div>
-                <span className="text-slate-300 font-medium animate-pulse">NextHire AI is generating comprehensive guidance...</span>
+                <span className="text-slate-600 font-medium animate-pulse">NextHire AI is generating comprehensive guidance...</span>
               </div>
             )}
             <div ref={chatEndRef} />
           </div>
 
           {/* Quick Prompts Carousel */}
-          <div className="px-3 py-2 bg-slate-950/80 border-t border-slate-800 flex gap-1.5 overflow-x-auto text-[10.5px] scrollbar-none">
+          <div className="px-3 py-2 bg-white border-t border-slate-200 flex gap-1.5 overflow-x-auto text-[10.5px] scrollbar-none">
             {samplePrompts.map((prompt, i) => (
               <button
                 key={i}
                 onClick={() => handleSendMessage(prompt)}
-                className="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-800/90 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700/60 transition-all active:scale-95 shrink-0"
+                className="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-blue-600 hover:text-white border border-slate-200 transition-all active:scale-95 shrink-0 font-medium"
               >
                 {prompt}
               </button>
@@ -509,19 +509,19 @@ export default function AICareerChatbot() {
           {/* Input Box */}
           <form
             onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
-            className="p-3 bg-slate-900 border-t border-slate-800 flex items-center gap-2"
+            className="p-3 bg-white border-t border-slate-200 flex items-center gap-2"
           >
             <input
               type="text"
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
               placeholder="Ask anything (e.g. roadmaps, code, interview questions)..."
-              className="flex-1 bg-slate-800 border border-slate-700/80 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 transition-colors shadow-inner"
+              className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 transition-colors"
             />
             <button
               type="submit"
               disabled={loading || !inputQuery.trim()}
-              className="p-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-40 text-white transition-all shadow-md shadow-blue-600/30 active:scale-95 shrink-0"
+              className="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white transition-all shadow-md shadow-blue-500/20 active:scale-95 shrink-0"
             >
               <Send className="w-4 h-4" />
             </button>

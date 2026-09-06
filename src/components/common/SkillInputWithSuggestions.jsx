@@ -92,34 +92,34 @@ export default function SkillInputWithSuggestions({
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Accent styling helpers
+  // Accent styling helpers for light blue/white theme
   const accentClasses = {
     blue: {
-      border: 'focus:border-blue-500',
-      badgeBg: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-      buttonBg: 'bg-blue-600 hover:bg-blue-500',
-      activeItem: 'bg-blue-600/30 text-blue-200 border-blue-500/40',
+      border: 'focus:border-blue-600',
+      badgeBg: 'bg-blue-50 text-blue-800 border-blue-200',
+      buttonBg: 'bg-blue-600 hover:bg-blue-700',
+      activeItem: 'bg-blue-50 text-blue-900 font-bold',
       ring: 'focus:ring-blue-500/20'
     },
     purple: {
-      border: 'focus:border-purple-500',
-      badgeBg: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-      buttonBg: 'bg-purple-600 hover:bg-purple-500',
-      activeItem: 'bg-purple-600/30 text-purple-200 border-purple-500/40',
+      border: 'focus:border-purple-600',
+      badgeBg: 'bg-purple-50 text-purple-800 border-purple-200',
+      buttonBg: 'bg-purple-600 hover:bg-purple-700',
+      activeItem: 'bg-purple-50 text-purple-900 font-bold',
       ring: 'focus:ring-purple-500/20'
     },
     emerald: {
-      border: 'focus:border-emerald-500',
-      badgeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-      buttonBg: 'bg-emerald-600 hover:bg-emerald-500',
-      activeItem: 'bg-emerald-600/30 text-emerald-200 border-emerald-500/40',
+      border: 'focus:border-emerald-600',
+      badgeBg: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+      buttonBg: 'bg-emerald-600 hover:bg-emerald-700',
+      activeItem: 'bg-emerald-50 text-emerald-900 font-bold',
       ring: 'focus:ring-emerald-500/20'
     }
   }[accentColor] || {
-    border: 'focus:border-blue-500',
-    badgeBg: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-    buttonBg: 'bg-blue-600 hover:bg-blue-500',
-    activeItem: 'bg-blue-600/30 text-blue-200 border-blue-500/40',
+    border: 'focus:border-blue-600',
+    badgeBg: 'bg-blue-50 text-blue-800 border-blue-200',
+    buttonBg: 'bg-blue-600 hover:bg-blue-700',
+    activeItem: 'bg-blue-50 text-blue-900 font-bold',
     ring: 'focus:ring-blue-500/20'
   };
 
@@ -234,13 +234,13 @@ export default function SkillInputWithSuggestions({
                   setIsOpen(true);
                 }
               }}
-              className={`w-full bg-slate-800/90 border border-slate-700/80 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none ${accentClasses.border} transition-all shadow-inner`}
+              className={`w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white ${accentClasses.border} transition-all`}
             />
             {inputValue && (
               <button
                 type="button"
                 onClick={() => { setInputValue(''); setIsOpen(false); }}
-                className="absolute right-3 top-2.5 text-slate-400 hover:text-white"
+                className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -256,7 +256,7 @@ export default function SkillInputWithSuggestions({
                 handleSelectSkill(inputValue.trim());
               }
             }}
-            className={`px-4 py-2.5 rounded-xl ${accentClasses.buttonBg} text-white font-bold text-xs flex items-center gap-1.5 shadow-lg transition-transform active:scale-95 shrink-0`}
+            className={`px-4 py-2.5 rounded-xl ${accentClasses.buttonBg} text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-blue-500/20 transition-transform active:scale-95 shrink-0`}
           >
             <Plus className="w-4 h-4" /> Add Skill
           </button>
@@ -264,16 +264,16 @@ export default function SkillInputWithSuggestions({
 
         {/* Live Autocomplete Suggestions Overlay */}
         {isOpen && filteredSuggestions.length > 0 && (
-          <div className="absolute left-0 right-0 top-full mt-1.5 z-50 glass-panel rounded-2xl border border-slate-700/80 shadow-2xl overflow-hidden py-1.5 animate-in fade-in slide-in-from-top-1 bg-slate-900/95 backdrop-blur-xl">
-            <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 flex items-center justify-between">
+          <div className="absolute left-0 right-0 top-full mt-1.5 z-50 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden py-1.5 animate-in fade-in slide-in-from-top-1">
+            <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100 flex items-center justify-between">
               <span className="flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-amber-300" />
+                <Sparkles className="w-3 h-3 text-amber-500" />
                 Matching Skill Suggestions
               </span>
-              <span className="text-[9px] text-slate-500">Press Enter ↵ or Click to Select</span>
+              <span className="text-[9px] text-slate-400">Press Enter ↵ or Click to Select</span>
             </div>
 
-            <ul className="max-h-56 overflow-y-auto divide-y divide-slate-800/60">
+            <ul className="max-h-56 overflow-y-auto divide-y divide-slate-100">
               {filteredSuggestions.map((suggestion, idx) => {
                 const isSelected = idx === selectedIndex;
                 return (
@@ -284,15 +284,15 @@ export default function SkillInputWithSuggestions({
                     className={`px-4 py-2.5 text-xs font-semibold cursor-pointer flex items-center justify-between transition-colors ${
                       isSelected 
                         ? `${accentClasses.activeItem} pl-5` 
-                        : 'text-slate-200 hover:bg-slate-800/80 hover:text-white'
+                        : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
                     }`}
                   >
                     <span className="flex items-center gap-2">
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-amber-400' : 'bg-slate-500'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-blue-600' : 'bg-slate-300'}`} />
                       {suggestion}
                     </span>
                     {isSelected && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">
                         Press Enter ↵
                       </span>
                     )}
@@ -307,15 +307,15 @@ export default function SkillInputWithSuggestions({
       {/* Quick Click Recommendations Pills */}
       {quickSuggestions.length > 0 && (
         <div className="flex flex-wrap items-center gap-1.5 pt-1">
-          <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1 mr-1">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Suggested:
+          <span className="text-[11px] font-semibold text-slate-500 flex items-center gap-1 mr-1">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Suggested:
           </span>
           {quickSuggestions.map(rec => (
             <button
               key={rec}
               type="button"
               onClick={() => handleSelectSkill(rec)}
-              className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/70 flex items-center gap-1 transition-all transform hover:-translate-y-0.5"
+              className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200 hover:border-blue-300 flex items-center gap-1 transition-all transform hover:-translate-y-0.5 font-medium"
             >
               <Plus className="w-3 h-3 text-slate-400" />
               <span>{rec}</span>
@@ -327,18 +327,18 @@ export default function SkillInputWithSuggestions({
       {/* Selected Skill Tags Display Chips */}
       <div className="flex flex-wrap gap-2 pt-2">
         {skills.length === 0 ? (
-          <p className="text-xs text-slate-500 italic py-1">No skill tags added yet. Type above to add.</p>
+          <p className="text-xs text-slate-400 italic py-1">No skill tags added yet. Type above to add.</p>
         ) : (
           skills.map((skill, i) => (
             <span
               key={i}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border ${accentClasses.badgeBg} shadow-sm group transition-all`}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border ${accentClasses.badgeBg} shadow-xs group transition-all`}
             >
               <span>{skill}</span>
               <button
                 type="button"
                 onClick={() => onRemoveSkill(skill)}
-                className="text-slate-400 hover:text-red-400 p-0.5 rounded-md hover:bg-slate-800 transition-colors"
+                className="text-slate-400 hover:text-red-600 p-0.5 rounded-md hover:bg-slate-100 transition-colors"
                 title={`Remove ${skill}`}
               >
                 <X className="w-3.5 h-3.5" />
