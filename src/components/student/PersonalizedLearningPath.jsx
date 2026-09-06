@@ -42,12 +42,14 @@ export default function PersonalizedLearningPath({
   // Synthesize tailored learning phases based on missing skills & target role
   const generateRoadmapPhases = () => {
     const missingLower = missingSkills.map(s => s.toLowerCase().trim());
+    const jobTitleLower = (jobTitle || '').toLowerCase();
     
     // Check dominant skill areas
-    const hasAI = missingLower.some(s => s.includes('python') || s.includes('pytorch') || s.includes('tensorflow') || s.includes('machine learning') || s.includes('deep learning'));
-    const hasCloudDevOps = missingLower.some(s => s.includes('docker') || s.includes('kubernetes') || s.includes('aws') || s.includes('cloud') || s.includes('ci/cd'));
-    const hasBackend = missingLower.some(s => s.includes('node') || s.includes('express') || s.includes('sql') || s.includes('mongodb') || s.includes('database') || s.includes('api'));
-    const hasFrontend = missingLower.some(s => s.includes('react') || s.includes('next') || s.includes('vue') || s.includes('typescript') || s.includes('tailwind') || s.includes('frontend'));
+    const hasAI = missingLower.some(s => s.includes('python') || s.includes('pytorch') || s.includes('tensorflow') || s.includes('machine learning') || s.includes('deep learning')) || jobTitleLower.includes('ai') || jobTitleLower.includes('machine learning');
+    const hasCloudDevOps = missingLower.some(s => s.includes('docker') || s.includes('kubernetes') || s.includes('aws') || s.includes('cloud') || s.includes('ci/cd')) || jobTitleLower.includes('devops') || jobTitleLower.includes('cloud');
+    const hasBackend = missingLower.some(s => s.includes('node') || s.includes('express') || s.includes('sql') || s.includes('mongodb') || s.includes('database') || s.includes('api')) || jobTitleLower.includes('backend');
+    const hasFrontend = missingLower.some(s => s.includes('react') || s.includes('next') || s.includes('vue') || s.includes('typescript') || s.includes('tailwind') || s.includes('frontend')) || jobTitleLower.includes('frontend');
+    const hasMobile = missingLower.some(s => s.includes('flutter') || s.includes('dart') || s.includes('mobile') || s.includes('react native') || s.includes('ios') || s.includes('android')) || jobTitleLower.includes('flutter') || jobTitleLower.includes('mobile');
 
     if (missingCount === 0) {
       return [
@@ -94,7 +96,15 @@ export default function PersonalizedLearningPath({
       'Solve practical coding exercises and study production syntax patterns'
     ];
 
-    if (hasAI && (phase1Skills.some(s => s.toLowerCase().includes('pytorch') || s.toLowerCase().includes('machine')))) {
+    if (hasMobile) {
+      phase1Title = 'Cross-Platform Mobile UI & Widget Architecture';
+      phase1Desc = 'Master Flutter & Dart widget trees, reactive layouts, and native app lifecycle state.';
+      phase1Outcomes = [
+        'Build custom responsive widgets and smooth mobile animations',
+        'Configure state management (BLoC / Provider) for clean app data flow',
+        'Setup Android Studio / VS Code mobile emulators and native build tools'
+      ];
+    } else if (hasAI && (phase1Skills.some(s => s.toLowerCase().includes('pytorch') || s.toLowerCase().includes('machine')))) {
       phase1Title = 'Deep Learning & Tensor Mathematics';
       phase1Desc = 'Master PyTorch tensor mechanics, automatic differentiation, and dataset pipelines.';
       phase1Outcomes = [
@@ -135,7 +145,15 @@ export default function PersonalizedLearningPath({
       'Deploy service with CI/CD pipeline and environment secrets'
     ];
 
-    if (hasAI) {
+    if (hasMobile) {
+      phase2Title = 'Mobile Backend Integration & State Persistence';
+      phase2Desc = 'Connect mobile apps to RESTful APIs, offline databases, and push notification services.';
+      phase2Outcomes = [
+        'Implement HTTP API services with dio/http and JSON serialization',
+        'Configure local offline storage using Hive, Sqflite, or Shared Preferences',
+        'Implement authentication flows with secure token storage'
+      ];
+    } else if (hasAI) {
       phase2Title = 'Model Architecture & Deployment Pipelines';
       phase2Desc = 'Fine-tuning, transfer learning, and deploying models behind high-speed REST endpoints.';
       phase2Outcomes = [
@@ -177,7 +195,10 @@ export default function PersonalizedLearningPath({
     let capstoneStack = [...missingSkills, ...matchedSkills.slice(0, 2)];
     let capstoneBullet = `Engineered an end-to-end ${jobTitle.toLowerCase()} platform utilizing ${missingSkills.slice(0, 3).join(', ')}, demonstrating 99.9% uptime and automated testing.`;
 
-    if (hasAI) {
+    if (hasMobile) {
+      capstoneTitle = 'Cross-Platform Enterprise Mobile Application';
+      capstoneBullet = `Engineered a feature-rich Flutter & Dart mobile app with BLoC state management and REST API integration; published APK build and achieved 60fps UI performance across Android & iOS.`;
+    } else if (hasAI) {
       capstoneTitle = 'End-to-End AI Prediction & Inference Platform';
       capstoneBullet = `Developed a real-time deep learning inference pipeline with PyTorch and FastAPI; decreased model latency by 35% through ONNX quantization and Docker containerization.`;
     } else if (hasCloudDevOps) {

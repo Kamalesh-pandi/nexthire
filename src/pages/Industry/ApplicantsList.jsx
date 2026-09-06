@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserCheck, Sparkles, Filter, CheckCircle2, Award } from 'lucide-react';
-import { fetchJobsFromFirestore, fetchApplicationsFromFirestore, updateApplicationStatusInFirestore } from '../../services/firebase';
+import { fetchJobsFromFirestore, fetchApplicationsFromFirestore, updateApplicationStatusInFirestore, deduplicateJobs } from '../../services/firebase';
+import { addNotification } from '../../services/notificationService';
 import { rankCandidatesForJob } from '../../services/aiService';
 import CandidateRankCard from '../../components/industry/CandidateRankCard';
 import ChatModal from '../../components/common/ChatModal';
@@ -21,10 +22,11 @@ export default function ApplicantsList() {
           fetchJobsFromFirestore(),
           fetchApplicationsFromFirestore()
         ]);
-        setJobs(jobsList);
+        const uniqueJobs = deduplicateJobs(jobsList);
+        setJobs(uniqueJobs);
         setApplications(appsList);
-        if (jobsList.length > 0) {
-          setSelectedJobId(jobsList[0].id);
+        if (uniqueJobs.length > 0) {
+          setSelectedJobId(uniqueJobs[0].id);
         }
       } catch (err) {
         console.error("Firestore error loading applicants list:", err);
@@ -51,10 +53,33 @@ export default function ApplicantsList() {
   });
 
   const handleStatusChange = async (appId, newStatus) => {
+    const targetApp = applications.find(a => a.id === appId);
     setApplications(prev =>
       prev.map(app => (app.id === appId ? { ...app, status: newStatus } : app))
     );
     await updateApplicationStatusInFirestore(appId, newStatus);
+
+    if (targetApp) {
+      if (newStatus === 'Shortlisted') {
+        addNotification({
+          userId: targetApp.userId,
+          userEmail: targetApp.userEmail,
+          title: `🎉 Shortlisted: ${targetApp.jobTitle}`,
+          message: `Congratulations! ${targetApp.companyName || 'Recruiter'} has shortlisted your candidate profile for ${targetApp.jobTitle}.`,
+          type: 'shortlisted',
+          link: '/student/dashboard'
+        });
+      } else if (newStatus === 'Rejected') {
+        addNotification({
+          userId: targetApp.userId,
+          userEmail: targetApp.userEmail,
+          title: `ℹ️ Application Update: ${targetApp.jobTitle}`,
+          message: `${targetApp.companyName || 'Recruiter'} has updated your application status for ${targetApp.jobTitle}.`,
+          type: 'info',
+          link: '/student/dashboard'
+        });
+      }
+    }
   };
 
   return (

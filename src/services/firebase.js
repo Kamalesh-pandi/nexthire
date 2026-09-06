@@ -226,20 +226,49 @@ export async function rejectUserInFirestore(userId) {
 /**
  * 2. JOBS COLLECTION
  */
+export function deduplicateJobs(sourceJobs = []) {
+  if (!Array.isArray(sourceJobs)) return [];
+  const uniqueJobs = [];
+  const seenIds = new Set();
+  const seenKeys = new Set();
+
+  sourceJobs.forEach(job => {
+    if (!job) return;
+    const idKey = (job.id || '').toString().toLowerCase().trim();
+    const titleKey = (job.title || '').toLowerCase().trim();
+    const companyKey = (job.companyName || job.companyId || '').toLowerCase().trim();
+    const titleCompKey = `${titleKey}::${companyKey}`;
+
+    if (idKey && seenIds.has(idKey)) return;
+    if (titleCompKey && seenKeys.has(titleCompKey)) return;
+
+    if (idKey) seenIds.add(idKey);
+    if (titleCompKey) seenKeys.add(titleCompKey);
+    uniqueJobs.push(job);
+  });
+
+  return uniqueJobs;
+}
+
 export async function fetchJobsFromFirestore() {
-  if (!isLiveFirebaseConfigured || !db) return [];
-  try {
-    const q = query(collection(db, 'jobs'));
-    const querySnapshot = await getDocs(q);
-    const jobs = [];
-    querySnapshot.forEach((docSnap) => {
-      jobs.push({ id: docSnap.id, ...docSnap.data() });
-    });
-    return jobs;
-  } catch (err) {
-    console.error("Firestore fetchJobs error:", err);
-    return [];
+  let sourceJobs = [];
+  if (isLiveFirebaseConfigured && db) {
+    try {
+      const q = query(collection(db, 'jobs'));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((docSnap) => {
+        sourceJobs.push({ id: docSnap.id, ...docSnap.data() });
+      });
+    } catch (err) {
+      console.error("Firestore fetchJobs error:", err);
+    }
   }
+
+  if (sourceJobs.length === 0) {
+    sourceJobs = MOCK_JOBS;
+  }
+
+  return deduplicateJobs(sourceJobs);
 }
 
 export async function createJobInFirestore(jobData) {

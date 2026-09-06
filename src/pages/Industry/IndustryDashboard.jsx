@@ -12,7 +12,7 @@ import {
   Award
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { fetchJobsFromFirestore, fetchApplicationsFromFirestore } from '../../services/firebase';
+import { fetchJobsFromFirestore, fetchApplicationsFromFirestore, deduplicateJobs } from '../../services/firebase';
 import JobPostModal from '../../components/industry/JobPostModal';
 import ChatModal from '../../components/common/ChatModal';
 
@@ -32,7 +32,7 @@ export default function IndustryDashboard() {
           fetchJobsFromFirestore(),
           fetchApplicationsFromFirestore()
         ]);
-        setJobs(jobsList);
+        setJobs(deduplicateJobs(jobsList));
         setApplications(appsList);
       } catch (err) {
         console.error("Error loading recruiter dashboard data from Firestore:", err);
@@ -44,7 +44,7 @@ export default function IndustryDashboard() {
   }, []);
 
   const handleJobCreated = (newJob) => {
-    setJobs([newJob, ...jobs]);
+    setJobs(prev => deduplicateJobs([newJob, ...prev]));
   };
 
   const shortlistedCount = applications.filter(a => a.status === 'Shortlisted').length;

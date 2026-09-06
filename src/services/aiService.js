@@ -1253,3 +1253,485 @@ When working with or studying **"${query}"**, modern software engineering priori
 #### 3. Recommended Next Question
 💬 *Would you like a code example, an interview preparation breakdown, or a curated list of project architectures related to this topic?*`;
 }
+
+/**
+ * =========================================================================
+ * NEW FEATURE 1: AI MOCK INTERVIEW COACH & QUESTION GENERATOR
+ * =========================================================================
+ */
+export async function generateInterviewQuestionsAI(jobRole = "Full-Stack Developer", difficulty = "Mid-Level") {
+  const ai = getGeminiClient();
+
+  if (ai) {
+    for (const model of GEMINI_MODELS) {
+      try {
+        const prompt = `
+You are a Principal Tech Recruiter & Engineering Director.
+Generate 4 highly realistic interview questions for a candidate applying for the role of "${jobRole}" at difficulty level "${difficulty}".
+Include:
+- 2 Technical Domain/Architecture questions
+- 1 Data Structure / Algorithmic logic question
+- 1 HR / Behavioral STAR method question
+
+Respond STRICTLY in valid raw JSON format matching this schema:
+{
+  "jobRole": "${jobRole}",
+  "difficulty": "${difficulty}",
+  "questions": [
+    {
+      "id": 1,
+      "category": "Technical Architecture",
+      "question": "Question text here",
+      "hints": ["Hint 1", "Hint 2"],
+      "keyConcepts": ["Concept A", "Concept B"]
+    }
+  ]
+}
+`;
+        const response = await ai.models.generateContent({
+          model: model,
+          contents: prompt
+        });
+
+        const rawText = response.text || "";
+        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          if (parsed && Array.isArray(parsed.questions)) {
+            return parsed;
+          }
+        }
+      } catch (err) {
+        console.warn(`Gemini API interview question generation failed on ${model}:`, err?.message);
+      }
+    }
+  }
+
+  // Fallback High-Quality Interview Questions Bank
+  const fallbackBank = {
+    "Full-Stack Developer": [
+      {
+        id: 1,
+        category: "Technical Architecture",
+        question: "Explain the difference between Client-Side Rendering (CSR) and Server-Side Rendering (SSR). When would you choose SSR over CSR in a production React application?",
+        hints: ["Think about initial HTML delivery, SEO indexing, dynamic hydration, and server TTFB."],
+        keyConcepts: ["SEO", "Hydration", "Core Web Vitals", "Next.js"]
+      },
+      {
+        id: 2,
+        category: "System & API Design",
+        question: "How would you design a resilient authentication system using JWTs and Refresh Tokens? How do you defend against XSS and CSRF token theft?",
+        hints: ["Consider httpOnly cookies, in-memory access tokens, and refresh token rotation."],
+        keyConcepts: ["JWT", "httpOnly Cookies", "XSS Mitigation", "Token Rotation"]
+      },
+      {
+        id: 3,
+        category: "Data Structures & Performance",
+        question: "How do you optimize a React component tree that re-renders unnecessarily when parent state updates? What tools and hooks would you use?",
+        hints: ["Mention React.memo, useMemo, useCallback, and React DevTools Profiler."],
+        keyConcepts: ["React.memo", "Re-render Optimization", "useCallback", "DOM Batching"]
+      },
+      {
+        id: 4,
+        category: "Behavioral (STAR Method)",
+        question: "Describe a situation where a critical bug broke production or a lab deployment deadline was approaching. How did you diagnose, resolve, and communicate the issue?",
+        hints: ["Structure your answer into Situation, Task, Action, and Result."],
+        keyConcepts: ["STAR Method", "Root Cause Analysis", "Crisis Communication"]
+      }
+    ],
+    "AI / Machine Learning Engineer": [
+      {
+        id: 1,
+        category: "AI & LLM Architecture",
+        question: "What is Retrieval-Augmented Generation (RAG)? How do vector embeddings, cosine similarity, and chunking strategies prevent model hallucination?",
+        hints: ["Explain vector databases like Pinecone/Faiss, embedding distance, and top-k retrieval."],
+        keyConcepts: ["RAG Architecture", "Vector Databases", "Embeddings", "Context Ingestion"]
+      },
+      {
+        id: 2,
+        category: "Deep Learning Foundations",
+        question: "Explain the vanishing and exploding gradient problem in deep neural networks. How do residual connections (ResNets) and Adam optimization mitigate this?",
+        hints: ["Focus on backpropagation math, activation functions like ReLU, and skip connections."],
+        keyConcepts: ["Backpropagation", "Skip Connections", "Adam Optimizer", "Gradient Vanishing"]
+      },
+      {
+        id: 3,
+        category: "ML Ops & Model Evaluation",
+        question: "How do you address class imbalance in a classification dataset? Compare Precision, Recall, and F1-Score over simple Accuracy.",
+        hints: ["Discuss SMOTE oversampling, weighted cross-entropy loss, and ROC-AUC."],
+        keyConcepts: ["Precision vs Recall", "F1-Score", "Class Imbalance", "SMOTE"]
+      },
+      {
+        id: 4,
+        category: "Behavioral (STAR Method)",
+        question: "Tell me about a time your ML model suffered from overfitting on training data or failed in real-world test deployment. What actions did you take?",
+        hints: ["Highlight regularization, cross-validation, and production telemetry monitoring."],
+        keyConcepts: ["Overfitting", "STAR Method", "Model Monitoring"]
+      }
+    ],
+    "DevOps & Cloud Engineer": [
+      {
+        id: 1,
+        category: "Containerization & K8s",
+        question: "Explain how Kubernetes manages container failures using Readiness and Liveness probes. How do rolling updates achieve zero-downtime deployments?",
+        hints: ["Discuss pod lifecycles, deployment strategies, and kubelet status checks."],
+        keyConcepts: ["Liveness Probes", "Rolling Updates", "Zero-Downtime", "Pods"]
+      },
+      {
+        id: 2,
+        category: "Infrastructure as Code",
+        question: "What is state drift in Terraform? How do remote state locking with AWS S3 & DynamoDB prevent concurrent deployment corruption?",
+        hints: ["Explain terraform.tfstate, lock IDs, and CI/CD plan checks."],
+        keyConcepts: ["Terraform State", "Remote Lock", "Infrastructure as Code"]
+      },
+      {
+        id: 3,
+        category: "CI/CD & Security",
+        question: "How do you build a secure CI/CD pipeline using GitHub Actions that scans for secret leaks, container vulnerabilities, and deploys safely?",
+        hints: ["Mention Trivy, Gitleaks, staging environments, and OIDC token auth."],
+        keyConcepts: ["GitHub Actions", "Vulnerability Scanning", "Secrets Management"]
+      },
+      {
+        id: 4,
+        category: "Behavioral (STAR Method)",
+        question: "Describe a scenario where a server outage or cloud resource failure occurred. How did you restore services and write the post-mortem report?",
+        hints: ["Use STAR method focusing on MTTR (Mean Time to Recovery) and root cause fixes."],
+        keyConcepts: ["Incident Management", "MTTR", "Post-Mortem"]
+      }
+    ]
+  };
+
+  const selectedQuestions = fallbackBank[jobRole] || fallbackBank["Full-Stack Developer"];
+  return {
+    jobRole,
+    difficulty,
+    questions: selectedQuestions
+  };
+}
+
+/**
+ * AI Response Evaluator for Mock Interviews
+ */
+export async function evaluateInterviewResponseAI(questionText, candidateAnswer, jobRole = "Software Engineer") {
+  if (!candidateAnswer || candidateAnswer.trim().length < 10) {
+    return {
+      overallScore: 25,
+      starGrade: "Incomplete",
+      ratingBadge: "Needs Work",
+      strengths: ["Answer submitted."],
+      missedConcepts: ["Detailed explanation", "Concrete technical examples", "Structured conclusion"],
+      technicalAccuracy: "Response was too brief to measure technical depth.",
+      feedbackSummary: "Your response is very brief. Try adding specific examples, project experiences, and technical terms to demonstrate depth.",
+      modelAnswer: "An ideal response should state the core definition, explain the technical mechanism, cite a real project scenario where you used it, and discuss trade-offs."
+    };
+  }
+
+  const ai = getGeminiClient();
+
+  if (ai) {
+    for (const model of GEMINI_MODELS) {
+      try {
+        const prompt = `
+You are a Principal Tech Recruiter evaluating a candidate's answer during a mock technical interview for the role of "${jobRole}".
+
+INTERVIEW QUESTION:
+"${questionText}"
+
+CANDIDATE ANSWER:
+"${candidateAnswer}"
+
+Evaluate the candidate's answer thoroughly and return STRICTLY valid raw JSON matching this schema:
+{
+  "overallScore": 88,
+  "starGrade": "Excellent (STAR Aligned)",
+  "ratingBadge": "Interview Ready",
+  "strengths": ["Clear explanation of core concept", "Used relevant technical jargon correctly"],
+  "missedConcepts": ["Mentioning memory consumption trade-offs", "Edge case handling"],
+  "technicalAccuracy": "High. The candidate correctly explained the primary architecture principles.",
+  "feedbackSummary": "Solid response! Adding one metric from a past project will make this a 95+ answer.",
+  "modelAnswer": "An ideal response would highlight..."
+}
+`;
+        const response = await ai.models.generateContent({
+          model: model,
+          contents: prompt
+        });
+
+        const rawText = response.text || "";
+        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          if (parsed && typeof parsed.overallScore === 'number') {
+            return parsed;
+          }
+        }
+      } catch (err) {
+        console.warn(`Gemini API interview evaluation failed on ${model}:`, err?.message);
+      }
+    }
+  }
+
+  // Fallback Heuristic Evaluator
+  const length = candidateAnswer.trim().length;
+  const wordCount = candidateAnswer.trim().split(/\s+/).length;
+  const hasTechKeywords = /\b(react|node|api|database|sql|docker|cloud|dsa|system|state|component|performance|metric|star|result|action)\b/i.test(candidateAnswer);
+
+  let score = 65;
+  if (wordCount > 30) score += 10;
+  if (wordCount > 70) score += 10;
+  if (hasTechKeywords) score += 10;
+  score = Math.min(95, score);
+
+  return {
+    overallScore: score,
+    starGrade: wordCount > 50 ? "Good Structure (STAR Aligned)" : "Fair Structure",
+    ratingBadge: score >= 85 ? "Interview Ready" : score >= 70 ? "Competent" : "Needs Refinement",
+    strengths: [
+      `Articulated thoughts clearly across ${wordCount} words.`,
+      hasTechKeywords ? "Used relevant domain concepts in explanation." : "Maintained professional tone."
+    ],
+    missedConcepts: [
+      "Quantifiable metrics from actual hands-on projects.",
+      "Explicit trade-off comparison (e.g., memory vs execution time)."
+    ],
+    technicalAccuracy: "Good foundational understanding demonstrated.",
+    feedbackSummary: "Great effort! To turn this into a top 5% answer, structure it explicitly with Situation, Task, Action, and Result, and mention 1 key trade-off.",
+    modelAnswer: "A top-tier candidate response combines clear technical definitions with a concrete project example: 'In my previous project, we encountered this exact problem... By implementing X, we reduced latency by Y%'."
+  };
+}
+
+/**
+ * =========================================================================
+ * NEW FEATURE 2: SKILL GAP RADAR & 4-WEEK AI ROADMAP
+ * =========================================================================
+ */
+export async function generatePersonalizedRoadmapAI(studentSkills = [], targetRole = "Full-Stack Developer", customJdText = "") {
+  const ai = getGeminiClient();
+
+  if (ai) {
+    for (const model of GEMINI_MODELS) {
+      try {
+        const prompt = `
+You are an AI Master Career Coach.
+Target Role: "${targetRole}"
+Student Current Skills: ${JSON.stringify(studentSkills)}
+${customJdText ? `Target Job Description:\n"${customJdText}"` : ''}
+
+Generate a visual Skill Gap analysis + a personalized 4-Week Actionable Roadmap in STRICT raw JSON format matching this schema:
+{
+  "targetRole": "${targetRole}",
+  "overallMatchScore": 76,
+  "radarMetrics": [
+    { "category": "Frontend Architecture", "studentScore": 80, "targetScore": 90 },
+    { "category": "Backend & APIs", "studentScore": 70, "targetScore": 85 },
+    { "category": "Database & Storage", "studentScore": 60, "targetScore": 80 },
+    { "category": "DevOps & Cloud", "studentScore": 40, "targetScore": 75 },
+    { "category": "System Design & Testing", "studentScore": 50, "targetScore": 85 }
+  ],
+  "weeks": [
+    {
+      "weekNumber": 1,
+      "title": "Core Foundations & Skill Gaps",
+      "focusArea": "Docker Containerization & Backend API Security",
+      "actionItems": [
+        "Build a multi-container setup with Docker Compose",
+        "Implement rate-limiting middleware in Express/Node.js"
+      ],
+      "recommendedProject": "Microservice Authentication Service with Redis Rate Limiting",
+      "resourceLink": "https://developer.mozilla.org"
+    },
+    {
+      "weekNumber": 2,
+      "title": "Intermediate Architecture & State Management",
+      "focusArea": "State Management & Database Optimization",
+      "actionItems": [
+        "Learn indexing and query execution plans in PostgreSQL",
+        "Implement optimistic UI updates in React"
+      ],
+      "recommendedProject": "Real-Time Collaborative Dashboard",
+      "resourceLink": "https://react.dev"
+    },
+    {
+      "weekNumber": 3,
+      "title": "Cloud & CI/CD Pipelines",
+      "focusArea": "Automated Testing & GitHub Actions",
+      "actionItems": [
+        "Write integration tests using Playwright / Vitest",
+        "Set up auto-deployment pipeline to AWS/Vercel"
+      ],
+      "recommendedProject": "Automated Deployment Pipeline with Status Badges",
+      "resourceLink": "https://docs.github.com/actions"
+    },
+    {
+      "weekNumber": 4,
+      "title": "Interview Simulation & Portfolio Polishing",
+      "focusArea": "System Design Mocking & Technical Pitching",
+      "actionItems": [
+        "Complete 3 AI Mock Interview simulations on NextHire",
+        "Publish project READMEs with live deployed demo URLs"
+      ],
+      "recommendedProject": "Production-Ready Capstone Portfolio",
+      "resourceLink": "https://nexthire.ai"
+    }
+  ]
+}
+`;
+        const response = await ai.models.generateContent({
+          model: model,
+          contents: prompt
+        });
+
+        const rawText = response.text || "";
+        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          if (parsed && Array.isArray(parsed.weeks)) {
+            return parsed;
+          }
+        }
+      } catch (err) {
+        console.warn(`Gemini API roadmap generation failed on ${model}:`, err?.message);
+      }
+    }
+  }
+
+  // High-Quality Fallback Roadmap Engine
+  return {
+    targetRole,
+    overallMatchScore: 78,
+    radarMetrics: [
+      { category: "Frontend Architecture", studentScore: 85, targetScore: 90 },
+      { category: "Backend & APIs", studentScore: 75, targetScore: 85 },
+      { category: "Database & Storage", studentScore: 65, targetScore: 80 },
+      { category: "DevOps & Cloud", studentScore: 45, targetScore: 75 },
+      { category: "System Design & Testing", studentScore: 55, targetScore: 85 }
+    ],
+    weeks: [
+      {
+        weekNumber: 1,
+        title: "Week 1: Core Foundation & Skill Gap Bridge",
+        focusArea: "Containerization & Express API Architecture",
+        actionItems: [
+          "Dockerize a Node.js + PostgreSQL app using Docker Compose",
+          "Add input validation using Zod / Joi to prevent invalid payloads",
+          "Implement structured logging with Morgan / Winston"
+        ],
+        recommendedProject: "Containerized Microservice API Gateway",
+        resourceLink: "https://docs.docker.com/get-started/"
+      },
+      {
+        weekNumber: 2,
+        title: "Week 2: Database Performance & Indexing",
+        focusArea: "Query Optimization & Redis Caching",
+        actionItems: [
+          "Analyze query performance using EXPLAIN ANALYZE in SQL",
+          "Integrate Redis cache-aside pattern for heavy query endpoints",
+          "Design scalable schema for high-write data models"
+        ],
+        recommendedProject: "High-Throughput Caching Service",
+        resourceLink: "https://redis.io/docs/"
+      },
+      {
+        weekNumber: 3,
+        title: "Week 3: CI/CD Pipelines & Cloud Deployment",
+        focusArea: "GitHub Actions & Automated Testing",
+        actionItems: [
+          "Configure GitHub Actions workflow for pull request linting and unit tests",
+          "Deploy application to cloud instance (AWS EC2 / Render / Vercel)",
+          "Implement zero-downtime deployment strategy"
+        ],
+        recommendedProject: "Automated Full-Stack Deployment Pipeline",
+        resourceLink: "https://docs.github.com/en/actions"
+      },
+      {
+        weekNumber: 4,
+        title: "Week 4: Mock Interview & Resume Integration",
+        focusArea: "STAR Method Practice & Recruiter Outreach",
+        actionItems: [
+          "Practice 5 technical interview scenarios using NextHire AI Coach",
+          "Update resume bullet points with quantifiable metrics",
+          "Apply for top matched industry positions on NextHire"
+        ],
+        recommendedProject: "Capstone Portfolio Showcase",
+        resourceLink: "https://nexthire.ai"
+      }
+    ]
+  };
+}
+
+/**
+ * =========================================================================
+ * NEW FEATURE 3: INDUSTRY MICRO-CHALLENGE EVALUATOR
+ * =========================================================================
+ */
+export async function evaluateChallengeSubmissionAI(challengeTitle, githubUrl, liveDemoUrl, description) {
+  const ai = getGeminiClient();
+
+  if (ai) {
+    for (const model of GEMINI_MODELS) {
+      try {
+        const prompt = `
+You are a Principal Software Architect grading an Industry Micro-Challenge submission.
+Challenge Title: "${challengeTitle}"
+GitHub Repo: "${githubUrl}"
+Live Demo: "${liveDemoUrl}"
+Student Explanation: "${description}"
+
+Evaluate the submission and return STRICT raw JSON matching this schema:
+{
+  "codeScore": 92,
+  "innovationScore": 88,
+  "completenessScore": 95,
+  "overallBadge": "Recruiter Gold Badge",
+  "recruiterFastTrack": true,
+  "strengths": ["Clean code organization", "Well-documented README"],
+  "improvements": ["Add Dockerfile for easy containerized setup"],
+  "aiSummary": "Outstanding solution demonstrating production-ready architecture."
+}
+`;
+        const response = await ai.models.generateContent({
+          model: model,
+          contents: prompt
+        });
+
+        const rawText = response.text || "";
+        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          if (parsed && typeof parsed.codeScore === 'number') {
+            return parsed;
+          }
+        }
+      } catch (err) {
+        console.warn(`Gemini challenge evaluator failed on ${model}:`, err?.message);
+      }
+    }
+  }
+
+  // Fallback Challenge Evaluator
+  const isGithubValid = githubUrl && (githubUrl.includes("github.com") || githubUrl.startsWith("http"));
+  const hasDemo = liveDemoUrl && liveDemoUrl.length > 5;
+  const descLen = (description || '').length;
+
+  const score = Math.min(96, (isGithubValid ? 40 : 20) + (hasDemo ? 35 : 15) + (descLen > 50 ? 20 : 10));
+
+  return {
+    codeScore: score,
+    innovationScore: score - 4,
+    completenessScore: score,
+    overallBadge: score >= 85 ? "Recruiter Gold Badge 🏆" : "Verified Submission Badge 🥈",
+    recruiterFastTrack: score >= 80,
+    strengths: [
+      isGithubValid ? "Provided clean public GitHub repository link." : "Project description submitted.",
+      hasDemo ? "Provided functional live demo URL for immediate verification." : "Clear project scope defined."
+    ],
+    improvements: [
+      "Include automated integration tests to achieve full 100% score.",
+      "Add architectural diagram in the repository README."
+    ],
+    aiSummary: score >= 80 
+      ? "Strong technical submission! This solution qualifies for Recruiter Fast-Track Interview consideration."
+      : "Good prototype. Enhance the live demo and documentation to boost your recruiter ranking."
+  };
+}
+

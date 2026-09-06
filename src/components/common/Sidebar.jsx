@@ -12,7 +12,10 @@ import {
   Sparkles,
   BookOpenCheck,
   TrendingUp,
-  Award
+  Award,
+  BrainCircuit,
+  Target,
+  Trophy
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -23,12 +26,16 @@ export default function Sidebar() {
     { to: '/student/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/student/profile', label: 'My Profile & Skills', icon: GraduationCap },
     { to: '/student/resume-analyzer', label: 'AI Resume Analyzer', icon: Sparkles, badge: 'AI' },
+    { to: '/student/interview-prep', label: 'AI Interview Coach', icon: BrainCircuit, badge: 'NEW AI' },
+    { to: '/student/skill-roadmap', label: 'Skill Radar & Roadmap', icon: Target, badge: 'NEW AI' },
+    { to: '/student/challenges', label: 'Industry Challenges', icon: Trophy, badge: 'HOT' },
     { to: '/student/jobs', label: 'Jobs & Internships', icon: Briefcase },
   ];
 
   const getIndustryLinks = () => [
     { to: '/industry/dashboard', label: 'Recruiter Dashboard', icon: LayoutDashboard },
     { to: '/industry/post-job', label: 'Post Job / Internship', icon: PlusSquare },
+    { to: '/industry/challenges', label: 'Post Micro-Challenge', icon: Trophy, badge: 'NEW' },
     { to: '/industry/applicants', label: 'AI Candidate Ranking', icon: UserCheck, badge: 'AI' },
     { to: '/industry/search-students', label: 'Search Students', icon: Search },
   ];

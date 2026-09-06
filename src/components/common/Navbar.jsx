@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Sparkles, 
@@ -27,7 +27,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
-import { isLiveFirebaseConfigured } from '../../services/firebase';
+import { getLiveNotificationsForUser } from '../../services/notificationService';
 import NotificationCenter from './NotificationCenter';
 import FirebaseConfigModal from './FirebaseConfigModal';
 
@@ -41,6 +41,29 @@ export default function Navbar() {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [showFirebaseModal, setShowFirebaseModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [unreadNotifCount, setUnreadNotifCount] = useState(0);
+
+  useEffect(() => {
+    async function checkNotifications() {
+      if (!currentUser) return;
+      try {
+        const notifs = await getLiveNotificationsForUser(currentUser);
+        setUnreadNotifCount(notifs.filter(n => !n.read).length);
+      } catch (err) {
+        console.warn("Failed checking unread count:", err);
+      }
+    }
+    checkNotifications();
+
+    const handleUpdate = () => {
+      checkNotifications();
+    };
+
+    window.addEventListener('nexthire-notification-updated', handleUpdate);
+    return () => {
+      window.removeEventListener('nexthire-notification-updated', handleUpdate);
+    };
+  }, [currentUser]);
 
   const handleRoleSwitch = (role) => {
     switchDemoRole(role);
@@ -110,10 +133,14 @@ export default function Navbar() {
                   <button
                     onClick={() => setShowNotifications(!showNotifications)}
                     className="relative p-2 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors border border-slate-200"
+                    title="Live Notifications"
                   >
                     <Bell className="w-4 h-4" />
-                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-blue-600 animate-ping" />
-                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-blue-600" />
+                    {unreadNotifCount > 0 && (
+                      <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-blue-600 text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white shadow-xs animate-bounce">
+                        {unreadNotifCount > 9 ? '9+' : unreadNotifCount}
+                      </span>
+                    )}
                   </button>
 
                   {showNotifications && (
@@ -190,11 +217,35 @@ export default function Navbar() {
                               AI Resume Analyzer
                             </Link>
                             <Link
-                              to="/student/jobs"
+                              to="/student/interview-prep"
+                              onClick={() => setShowUserDropdown(false)}
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
+                            >
+                              <Sparkles className="w-4 h-4 text-blue-600" />
+                              AI Interview Coach
+                            </Link>
+                            <Link
+                              to="/student/skill-roadmap"
+                              onClick={() => setShowUserDropdown(false)}
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
+                            >
+                              <BarChart3 className="w-4 h-4 text-purple-600" />
+                              Skill Radar & Roadmap
+                            </Link>
+                            <Link
+                              to="/student/challenges"
                               onClick={() => setShowUserDropdown(false)}
                               className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
                             >
                               <Briefcase className="w-4 h-4 text-emerald-600" />
+                              Industry Challenges
+                            </Link>
+                            <Link
+                              to="/student/jobs"
+                              onClick={() => setShowUserDropdown(false)}
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors"
+                            >
+                              <Briefcase className="w-4 h-4 text-slate-600" />
                               Jobs & Internships
                             </Link>
                           </>

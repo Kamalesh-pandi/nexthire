@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Briefcase, Building2, MapPin, DollarSign, Calendar, Sparkles, CheckCircle2, Send, RefreshCw } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { fetchJobsFromFirestore, createApplicationInFirestore, fetchApplicationsFromFirestore } from '../../services/firebase';
+import { fetchJobsFromFirestore, createApplicationInFirestore, fetchApplicationsFromFirestore, deduplicateJobs } from '../../services/firebase';
+import { addNotification } from '../../services/notificationService';
 
 export default function JobsAndInternships() {
   const { currentUser } = useAuth();
@@ -20,7 +21,7 @@ export default function JobsAndInternships() {
           fetchJobsFromFirestore(),
           fetchApplicationsFromFirestore(currentUser ? { userId: currentUser.id } : {})
         ]);
-        setJobs(jobsList);
+        setJobs(deduplicateJobs(jobsList));
         setAppliedJobs(userApps.map(a => a.jobId));
       } catch (err) {
         console.error("Firestore data fetch error:", err);
@@ -62,6 +63,16 @@ export default function JobsAndInternships() {
       await createApplicationInFirestore(appData);
       setAppliedJobs([...appliedJobs, job.id]);
       setAppliedSuccess(job.title);
+
+      addNotification({
+        userId: appData.userId,
+        userEmail: appData.userEmail,
+        title: `📩 Application Submitted: ${job.title}`,
+        message: `Your application to ${job.companyName} was submitted successfully with ${matchScore}% ATS competency match.`,
+        type: 'applied',
+        link: '/student/dashboard'
+      });
+
       setTimeout(() => setAppliedSuccess(null), 4000);
     }
   };

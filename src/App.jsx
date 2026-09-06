@@ -23,6 +23,9 @@ import StudentDashboard from './pages/Student/StudentDashboard';
 import StudentProfile from './pages/Student/StudentProfile';
 import ResumeAnalyzer from './pages/Student/ResumeAnalyzer';
 import JobsAndInternships from './pages/Student/JobsAndInternships';
+import InterviewPrep from './pages/Student/InterviewPrep';
+import SkillRoadmap from './pages/Student/SkillRoadmap';
+import IndustryChallenges from './pages/Student/IndustryChallenges';
 
 // Industry Pages
 import IndustryDashboard from './pages/Industry/IndustryDashboard';
@@ -94,6 +97,21 @@ function LayoutContent() {
                 <ResumeAnalyzer />
               </ProtectedRoute>
             } />
+            <Route path="/student/interview-prep" element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <InterviewPrep />
+              </ProtectedRoute>
+            } />
+            <Route path="/student/skill-roadmap" element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <SkillRoadmap />
+              </ProtectedRoute>
+            } />
+            <Route path="/student/challenges" element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <IndustryChallenges />
+              </ProtectedRoute>
+            } />
             <Route path="/student/jobs" element={
               <ProtectedRoute allowedRoles={['student']}>
                 <JobsAndInternships />
@@ -109,6 +127,11 @@ function LayoutContent() {
             <Route path="/industry/post-job" element={
               <ProtectedRoute allowedRoles={['industry', 'recruiter']}>
                 <PostJob />
+              </ProtectedRoute>
+            } />
+            <Route path="/industry/challenges" element={
+              <ProtectedRoute allowedRoles={['industry', 'recruiter']}>
+                <IndustryChallenges />
               </ProtectedRoute>
             } />
             <Route path="/industry/applicants" element={
