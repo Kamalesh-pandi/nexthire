@@ -1,0 +1,162 @@
+import React, { useState, useEffect } from 'react';
+import { UserCheck, Sparkles, Filter, CheckCircle2, Award } from 'lucide-react';
+import { fetchJobsFromFirestore, fetchApplicationsFromFirestore, updateApplicationStatusInFirestore } from '../../services/firebase';
+import { rankCandidatesForJob } from '../../services/aiService';
+import CandidateRankCard from '../../components/industry/CandidateRankCard';
+import ChatModal from '../../components/common/ChatModal';
+
+export default function ApplicantsList() {
+  const [jobs, setJobs] = useState([]);
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedJobId, setSelectedJobId] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [chatRecipient, setChatRecipient] = useState(null);
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+      try {
+        const [jobsList, appsList] = await Promise.all([
+          fetchJobsFromFirestore(),
+          fetchApplicationsFromFirestore()
+        ]);
+        setJobs(jobsList);
+        setApplications(appsList);
+        if (jobsList.length > 0) {
+          setSelectedJobId(jobsList[0].id);
+        }
+      } catch (err) {
+        console.error("Firestore error loading applicants list:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
+
+  const selectedJob = jobs.find(j => j.id === selectedJobId) || jobs[0] || {
+    id: 'none',
+    title: 'No Job Selected',
+    companyName: 'N/A',
+    skillsRequired: ['React.js', 'Python']
+  };
+
+  const jobApplications = applications.filter(a => a.jobId === selectedJobId || (!selectedJobId && applications.length > 0));
+  const rankedCandidates = rankCandidatesForJob(jobApplications, selectedJob.skillsRequired || []);
+
+  const filteredCandidates = rankedCandidates.filter(c => {
+    if (statusFilter === 'All') return true;
+    return c.status === statusFilter;
+  });
+
+  const handleStatusChange = async (appId, newStatus) => {
+    setApplications(prev =>
+      prev.map(app => (app.id === appId ? { ...app, status: newStatus } : app))
+    );
+    await updateApplicationStatusInFirestore(appId, newStatus);
+  };
+
+  return (
+    <div className="space-y-8 pb-16">
+      
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
+            Recruiter Intelligence
+          </span>
+          <h1 className="text-2xl font-extrabold text-slate-100 mt-1">AI Candidate Ranking & Evaluation</h1>
+        </div>
+      </div>
+
+      {/* Select Job & Status Filter */}
+      <div className="glass-panel rounded-2xl p-4 border border-slate-700/80 flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="w-full md:w-1/2 space-y-1">
+          <label className="text-xs font-semibold text-slate-300">Select Job Posting</label>
+          {loading ? (
+            <div className="text-xs text-slate-400 py-2">Loading job listings...</div>
+          ) : (
+            <select
+              value={selectedJobId}
+              onChange={(e) => setSelectedJobId(e.target.value)}
+              className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:border-purple-500"
+            >
+              {jobs.length === 0 ? (
+                <option value="">No Jobs Found in Database</option>
+              ) : (
+                jobs.map(j => (
+                  <option key={j.id} value={j.id}>{j.title} ({j.companyName || 'Company'})</option>
+                ))
+              )}
+            </select>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 w-full md:w-auto self-end">
+          {['All', 'Shortlisted', 'Applied', 'Rejected'].map(st => (
+            <button
+              key={st}
+              onClick={() => setStatusFilter(st)}
+              className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+                statusFilter === st
+                  ? 'bg-purple-600 text-white shadow-md'
+                  : 'bg-slate-800 text-slate-400 hover:text-white'
+              }`}
+            >
+              {st}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Job Required Skills Pill Summary */}
+      {selectedJob && (
+        <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center gap-3">
+          <Sparkles className="w-5 h-5 text-amber-300 shrink-0" />
+          <div className="flex-1 space-y-1">
+            <span className="text-xs font-bold text-slate-200">AI Match Criteria for "{selectedJob.title}":</span>
+            <div className="flex flex-wrap gap-1.5">
+              {selectedJob.skillsRequired && selectedJob.skillsRequired.map((skill, i) => (
+                <span key={i} className="text-xs px-2.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Ranked Candidate List */}
+      <div className="space-y-4">
+        {loading ? (
+          <div className="glass-panel rounded-3xl p-8 text-center text-slate-400 text-xs">
+            Loading candidate applications from Firestore...
+          </div>
+        ) : filteredCandidates.length === 0 ? (
+          <div className="glass-panel rounded-3xl p-8 text-center text-slate-400 text-xs">
+            No candidate applications matching criteria for this role.
+          </div>
+        ) : (
+          filteredCandidates.map((candidate, idx) => (
+            <CandidateRankCard
+              key={candidate.id}
+              candidate={candidate}
+              rank={idx + 1}
+              onStatusChange={handleStatusChange}
+              onOpenChat={(name, role) => setChatRecipient({ name, role })}
+            />
+          ))
+        )}
+      </div>
+
+      {chatRecipient && (
+        <ChatModal
+          recipientName={chatRecipient.name}
+          recipientRole={chatRecipient.role}
+          onClose={() => setChatRecipient(null)}
+        />
+      )}
+
+    </div>
+  );
+}

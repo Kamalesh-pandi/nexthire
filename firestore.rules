@@ -1,0 +1,95 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isUser(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && (
+        getUserData().role == 'admin' || 
+        request.auth.token.email == 'admin@nexthire.ai'
+      );
+    }
+
+    function isMentor() {
+      return isSignedIn() && (getUserData().role == 'academician' || getUserData().role == 'mentor');
+    }
+
+    // COLLEGES COLLECTION
+    match /colleges/{collegeId} {
+      allow read: if true; // Public read for registration dropdowns
+      allow create, update, delete: if isAdmin();
+    }
+
+    // DEPARTMENTS COLLECTION
+    match /departments/{deptId} {
+      allow read: if true; // Public read for registration dropdowns
+      allow create, update, delete: if isAdmin();
+    }
+
+    // USERS COLLECTION
+    match /users/{userId} {
+      // Authenticated users can read profiles; Mentors can read their assigned students
+      allow read: if isSignedIn();
+      
+      // User can create their own account document during registration
+      // Cannot self-assign role='admin' or privileged roles unless pending/waiting
+      allow create: if isUser(userId) && (
+        (request.resource.data.role == 'student' && request.resource.data.status == 'approved') ||
+        (request.resource.data.role == 'pending' && request.resource.data.status == 'waiting')
+      );
+      
+      // Prevent users from modifying their own role or status manually
+      allow update: if isAdmin() || (
+        isUser(userId) && 
+        request.resource.data.role == resource.data.role && 
+        request.resource.data.status == resource.data.status
+      );
+      
+      // Only Admin can delete user documents
+      allow delete: if isAdmin();
+    }
+
+    // JOBS COLLECTION
+    match /jobs/{jobId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSignedIn() && (
+        getUserData().role == 'recruiter' || 
+        getUserData().role == 'industry' || 
+        isAdmin()
+      );
+    }
+
+    // APPLICATIONS COLLECTION
+    match /applications/{appId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && getUserData().role == 'student';
+      allow update, delete: if isSignedIn() && (
+        getUserData().role == 'recruiter' || 
+        getUserData().role == 'industry' || 
+        isAdmin()
+      );
+    }
+
+    // PROJECTS COLLECTION
+    match /projects/{projId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSignedIn() && (
+        isMentor() || 
+        isAdmin()
+      );
+    }
+
+  }
+}
