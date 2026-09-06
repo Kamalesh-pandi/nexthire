@@ -37,6 +37,19 @@ export function getUserDashboardPath(user) {
   }
 }
 
+export function calculateInitialATSScore(skills = [], departmentName = '', collegeName = '') {
+  const skillList = Array.isArray(skills) ? skills : [];
+  const skillCount = skillList.length;
+  
+  if (skillCount === 0) return 55;
+
+  let baseScore = 55 + (skillCount * 7);
+  if (departmentName) baseScore += 3;
+  if (collegeName) baseScore += 2;
+  
+  return Math.min(94, Math.max(50, baseScore));
+}
+
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(() => {
     try {
@@ -257,7 +270,7 @@ export function AuthProvider({ children }) {
         requestedRole: finalRole,
         status: finalStatus,
         createdAt: new Date().toISOString(),
-        skills: additionalInfo.skills || ['JavaScript', 'React.js', 'Python'],
+        skills: additionalInfo.skills || [],
         interests: additionalInfo.interests || ['Software Engineering'],
         institution: additionalInfo.institution || additionalInfo.collegeName || 'University Institute',
         collegeId: additionalInfo.collegeId || null,
@@ -271,7 +284,11 @@ export function AuthProvider({ children }) {
         companyName: (requestedRoleInput === 'industry' || requestedRoleInput === 'recruiter') 
           ? (additionalInfo.companyName || additionalInfo.institution || 'Tech Corp') 
           : null,
-        resumeScore: 82
+        resumeScore: calculateInitialATSScore(
+          additionalInfo.skills || [],
+          additionalInfo.departmentName,
+          additionalInfo.collegeName
+        )
       };
 
       Object.keys(userData).forEach(key => {

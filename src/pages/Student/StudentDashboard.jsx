@@ -11,7 +11,7 @@ import {
   BookOpen,
   Plus
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth, calculateInitialATSScore } from '../../context/AuthContext';
 import { fetchApplicationsFromFirestore, fetchJobsFromFirestore } from '../../services/firebase';
 import SkillGapCard from '../../components/student/SkillGapCard';
 import ApplicationTracker from '../../components/student/ApplicationTracker';
@@ -272,10 +272,20 @@ export default function StudentDashboard() {
         <div className="glass-card rounded-2xl p-5 border border-slate-700/60 flex items-center justify-between">
           <div>
             <p className="text-xs text-slate-400 font-medium">ATS Resume Score</p>
-            <h3 className="text-2xl font-black text-blue-400 mt-1">{currentUser?.resumeScore || 88}/100</h3>
-            <span className="text-[10px] text-emerald-400 flex items-center gap-1 mt-1">
-              <TrendingUp className="w-3 h-3" /> Top 12% in Cohort
-            </span>
+            {(() => {
+              const currentScore = currentUser?.resumeScore ?? calculateInitialATSScore(currentUser?.skills, currentUser?.departmentName, currentUser?.collegeName);
+              const scoreStatus = currentUser?.resumeFileName 
+                ? 'AI Verified Resume'
+                : (currentScore >= 80 ? 'Strong Skill Baseline' : currentScore >= 65 ? 'Moderate Stack' : 'Initial Evaluation');
+              return (
+                <>
+                  <h3 className="text-2xl font-black text-blue-400 mt-1">{currentScore}/100</h3>
+                  <span className="text-[10px] text-emerald-400 flex items-center gap-1 mt-1">
+                    <TrendingUp className="w-3 h-3" /> {scoreStatus}
+                  </span>
+                </>
+              );
+            })()}
           </div>
           <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">
             <Award className="w-6 h-6" />

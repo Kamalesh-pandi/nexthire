@@ -140,25 +140,57 @@ export async function fetchPendingUsersFromFirestore() {
 }
 
 export async function fetchAllUsersFromFirestore() {
-  if (!isLiveFirebaseConfigured || !db) return [];
-  try {
-    const snap = await getDocs(collection(db, 'users'));
-    const users = [];
-    const seen = new Set();
-    snap.forEach(docSnap => {
-      const data = docSnap.data();
-      const emailKey = (data.email || '').toLowerCase().trim();
-      const key = emailKey || docSnap.id;
-      if (!seen.has(key)) {
-        seen.add(key);
-        users.push({ id: docSnap.id, ...data });
-      }
-    });
-    return users;
-  } catch (err) {
-    console.error("Firestore fetchAllUsers error:", err);
-    return [];
+  const users = [];
+  const seen = new Set();
+
+  const addUser = (u) => {
+    if (!u) return;
+    const emailKey = (u.email || '').toLowerCase().trim();
+    const idKey = u.id || u.uid;
+    const nameKey = (u.name || '').toLowerCase().trim();
+    
+    // Create unique identifiers to prevent any duplicate entries
+    const primaryKey = emailKey || idKey || nameKey;
+    if (!primaryKey) return;
+
+    if (!seen.has(primaryKey)) {
+      seen.add(primaryKey);
+      if (emailKey) seen.add(emailKey);
+      if (idKey) seen.add(idKey);
+      users.push({ id: idKey || `usr_${Date.now()}`, ...u });
+    }
+  };
+
+  if (isLiveFirebaseConfigured && db) {
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      snap.forEach(docSnap => {
+        addUser({ id: docSnap.id, ...docSnap.data() });
+      });
+    } catch (err) {
+      console.error("Firestore fetchAllUsers error:", err);
+    }
   }
+
+  // Check locally saved registered mentors/users
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const storedMentors = localStorage.getItem('nexthire_registered_mentors');
+      if (storedMentors) {
+        const parsed = JSON.parse(storedMentors);
+        if (Array.isArray(parsed)) parsed.forEach(addUser);
+      }
+    }
+  } catch (e) {
+    console.warn("Error reading stored mentors for fetchAllUsers:", e);
+  }
+
+  // Fallback to MOCK_USERS if needed
+  if (users.length === 0 && typeof MOCK_USERS === 'object') {
+    Object.values(MOCK_USERS).forEach(addUser);
+  }
+
+  return users;
 }
 
 export async function approveUserInFirestore(userId, requestedRole) {
@@ -435,62 +467,86 @@ export async function createDepartmentInFirestore(deptData) {
   }
 }
 
-// Local cache helper for registered mentors
-export function saveRegisteredMentorLocally(mentorData) {
+// // Local cache helper & Firestore public sync for registered mentors
+export async function saveRegisteredMentorLocally(mentorData) {
   if (!mentorData) return;
+  const id = mentorData.id || mentorData.uid || `mentor_${Date.now()}`;
+  const email = (mentorData.email || '').toLowerCase().trim();
+
+  const cleanRecord = {
+    ...mentorData,
+    id: id,
+    uid: id,
+    role: 'academician',
+    status: mentorData.status || 'approved',
+    name: mentorData.name || mentorData.fullName || (email ? email.split('@')[0] : 'Academic Mentor'),
+    email: mentorData.email || '',
+    collegeId: mentorData.collegeId || '',
+    collegeName: mentorData.collegeName || mentorData.institution || '',
+    departmentId: mentorData.departmentId || '',
+    departmentName: mentorData.departmentName || mentorData.department || '',
+    designation: mentorData.designation || 'Faculty Academician & Mentor'
+  };
+
+  // 1. Save to persistent localStorage
   try {
-    if (typeof localStorage === 'undefined') return;
-    const stored = localStorage.getItem('nexthire_registered_mentors');
-    const mentors = stored ? JSON.parse(stored) : [];
-    const id = mentorData.id || mentorData.uid;
-    const email = (mentorData.email || '').toLowerCase().trim();
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem('nexthire_registered_mentors');
+      const mentors = stored ? JSON.parse(stored) : [];
+      const idx = mentors.findIndex(m => 
+        (id && (m.id === id || m.uid === id)) || 
+        (email && m.email && m.email.toLowerCase() === email)
+      );
 
-    const cleanRecord = {
-      ...mentorData,
-      id: id || `mentor_${Date.now()}`,
-      uid: id || `mentor_${Date.now()}`,
-      role: 'academician',
-      status: mentorData.status || 'approved',
-      name: mentorData.name || mentorData.fullName || 'Academic Mentor',
-      email: mentorData.email || '',
-      collegeId: mentorData.collegeId || '',
-      collegeName: mentorData.collegeName || mentorData.institution || '',
-      departmentId: mentorData.departmentId || '',
-      departmentName: mentorData.departmentName || mentorData.department || '',
-      designation: mentorData.designation || 'Faculty Mentor'
-    };
-
-    const idx = mentors.findIndex(m => 
-      (id && (m.id === id || m.uid === id)) || 
-      (email && m.email && m.email.toLowerCase() === email)
-    );
-
-    if (idx >= 0) {
-      mentors[idx] = { ...mentors[idx], ...cleanRecord };
-    } else {
-      mentors.push(cleanRecord);
+      if (idx >= 0) {
+        mentors[idx] = { ...mentors[idx], ...cleanRecord };
+      } else {
+        mentors.push(cleanRecord);
+      }
+      localStorage.setItem('nexthire_registered_mentors', JSON.stringify(mentors));
     }
-
-    localStorage.setItem('nexthire_registered_mentors', JSON.stringify(mentors));
   } catch (err) {
     console.warn("Could not cache mentor locally:", err);
+  }
+
+  // 2. Concurrently save to public_mentors collection in Firestore (allows unauthenticated students on /register to read)
+  if (isLiveFirebaseConfigured && db) {
+    try {
+      const mentorRef = doc(db, 'public_mentors', id);
+      await setDoc(mentorRef, cleanRecord, { merge: true });
+    } catch (e) {
+      console.warn("Firestore public_mentors save warning:", e);
+    }
   }
 }
 
 // Mentors (Academicians) in Department
 export async function fetchMentorsByDepartmentFromFirestore(collegeId, departmentId, collegeName = '', departmentName = '') {
-  // 1. Gather all candidate mentors from multiple sources:
-  // (A) Firestore (if authenticated & reachable)
-  // (B) localStorage registered mentors (guaranteed persistence across tabs & accounts)
-  // (C) Currently active user (if mentor)
-  // (D) Preloaded mock users
   const candidatePool = [];
   const candidateSeen = new Set();
 
   const addCandidate = (u) => {
     if (!u) return;
     const role = (u.role || u.requestedRole || '').toLowerCase();
-    const isMentor = role === 'academician' || role === 'faculty' || role === 'mentor' || u.isMentor === true;
+    const designation = (u.designation || '').toLowerCase();
+
+    // Do not include students/recruiters/admins as mentors
+    const isStudentOrRecruiter = role === 'student' || role === 'recruiter' || role === 'industry' || role === 'admin';
+    if (isStudentOrRecruiter) return;
+
+    const isMentor = 
+      role === 'academician' || 
+      role === 'faculty' || 
+      role === 'mentor' || 
+      u.isMentor === true ||
+      designation.includes('academician') ||
+      designation.includes('mentor') ||
+      designation.includes('faculty') ||
+      designation.includes('professor') ||
+      designation.includes('teacher') ||
+      designation.includes('head') ||
+      Boolean(u.collegeName || u.institution || u.departmentName);
+
     if (!isMentor) return;
 
     const mId = u.id || u.uid;
@@ -499,34 +555,46 @@ export async function fetchMentorsByDepartmentFromFirestore(collegeId, departmen
     if (!dedupeKey || candidateSeen.has(dedupeKey)) return;
 
     candidateSeen.add(dedupeKey);
-    candidatePool.push({
+
+    const mentorObj = {
       id: mId,
       uid: mId,
       ...u,
-      name: u.name || u.fullName || 'Faculty Mentor',
+      name: u.name || u.fullName || (mEmail ? mEmail.split('@')[0] : 'Faculty Mentor'),
       email: u.email || '',
       collegeId: u.collegeId || u.institutionId || '',
       collegeName: u.collegeName || u.institution || '',
       departmentId: u.departmentId || u.deptId || '',
       departmentName: u.departmentName || u.department || u.deptName || '',
-      designation: u.designation || 'Academic Faculty Mentor'
-    });
+      designation: u.designation || 'Faculty Academician & Mentor'
+    };
+
+    candidatePool.push(mentorObj);
   };
 
-  // Source A: Firestore users collection
+  // Source A: Firestore public_mentors collection (accessible to unauthenticated /register page)
   if (isLiveFirebaseConfigured && db) {
+    try {
+      const publicSnap = await getDocs(collection(db, 'public_mentors'));
+      publicSnap.forEach(docSnap => {
+        addCandidate({ id: docSnap.id, uid: docSnap.id, ...docSnap.data() });
+      });
+    } catch (err) {
+      console.warn("Firestore public_mentors fetch warning:", err.message);
+    }
+
+    // Source B: Firestore users collection
     try {
       const snap = await getDocs(collection(db, 'users'));
       snap.forEach(docSnap => {
         addCandidate({ id: docSnap.id, uid: docSnap.id, ...docSnap.data() });
       });
     } catch (err) {
-      // Unauthenticated reads on /register may throw permission-denied; fallback to local sources
-      console.warn("Firestore fetchMentors unauthenticated fallback:", err.message);
+      console.warn("Firestore users fetch warning:", err.message);
     }
   }
 
-  // Source B: Persistent localStorage registered mentors
+  // Source C: Persistent localStorage registered mentors
   try {
     if (typeof localStorage !== 'undefined') {
       const stored = localStorage.getItem('nexthire_registered_mentors');
@@ -537,7 +605,7 @@ export async function fetchMentorsByDepartmentFromFirestore(collegeId, departmen
         }
       }
 
-      // Source C: Active user if mentor
+      // Source D: Active user if mentor
       const activeUser = localStorage.getItem('nexthire_active_user');
       if (activeUser) {
         addCandidate(JSON.parse(activeUser));
@@ -547,85 +615,73 @@ export async function fetchMentorsByDepartmentFromFirestore(collegeId, departmen
     console.warn("localStorage mentor pool read error:", e);
   }
 
-  // Source D: Built-in mock mentors
+  // Source E: Built-in mock mentors
   if (typeof MOCK_USERS === 'object' && MOCK_USERS) {
     Object.values(MOCK_USERS).forEach(addCandidate);
   }
 
-  // Helper: extract acronyms from string (e.g. "COEP", "VJTI", "SPIT", "CSE", "IT")
-  const extractAcronyms = (str) => {
-    const list = [];
-    const parenMatches = (str || '').match(/\(([^)]+)\)/g);
-    if (parenMatches) {
-      parenMatches.forEach(m => {
-        const cleaned = m.replace(/[()]/g, '').trim().toLowerCase();
-        if (cleaned.length >= 2) list.push(cleaned);
-      });
-    }
-    const words = (str || '').toLowerCase().split(/[^a-z0-9]/).filter(w => w.length >= 2);
-    return [...list, ...words];
+  // Helper to extract clean tokens from college/department identifiers
+  const extractTokens = (str) => {
+    if (!str) return '';
+    return String(str)
+      .toLowerCase()
+      .replace(/col_mh_/g, '')
+      .replace(/col_/g, '')
+      .replace(/[0-9]/g, '')
+      .replace(/[^a-z]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   };
 
-  // Helper: normalize string for comparison
-  const normalize = (str) => String(str || '').toLowerCase().replace(/[^a-z0-9]/g, ' ').replace(/\s+/g, ' ').trim();
-
-  const tColId = normalize(collegeId);
-  const tColName = normalize(collegeName);
-  const tDeptId = normalize(departmentId);
-  const tDeptName = normalize(departmentName);
-
-  const tColAcronyms = extractAcronyms(collegeName);
-  const tDeptAcronyms = extractAcronyms(departmentName);
+  const targetColTokens = extractTokens(`${collegeName} ${collegeId}`);
+  const targetDeptTokens = extractTokens(`${departmentName} ${departmentId}`);
 
   const matchedMentors = [];
+  const collegeOnlyMentors = [];
   const seenMentors = new Set();
 
   for (const mentor of candidatePool) {
-    const mColId = normalize(mentor.collegeId);
-    const mColName = normalize(mentor.collegeName);
-    const mDeptId = normalize(mentor.departmentId);
-    const mDeptName = normalize(mentor.departmentName);
+    const mentorColTokens = extractTokens(`${mentor.collegeName} ${mentor.institution} ${mentor.collegeId}`);
+    const mentorDeptTokens = extractTokens(`${mentor.departmentName} ${mentor.department} ${mentor.departmentId}`);
 
     // 1. College Matching
     let collegeMatches = false;
-    if (!tColId && !tColName) {
+
+    if (!collegeId && !collegeName) {
       collegeMatches = true;
-    } else if (tColId && mColId && tColId === mColId) {
-      collegeMatches = true;
-    } else if (tColName && mColName) {
-      if (mColName === tColName || mColName.includes(tColName) || tColName.includes(mColName)) {
+    } else if (targetColTokens && mentorColTokens) {
+      if (targetColTokens.includes(mentorColTokens) || mentorColTokens.includes(targetColTokens)) {
         collegeMatches = true;
       } else {
-        // Check acronym and keyword overlap
-        const mColAcronyms = extractAcronyms(mentor.collegeName);
-        const commonAcronym = tColAcronyms.some(a => a.length >= 3 && mColAcronyms.includes(a));
-        if (commonAcronym) {
+        const normKeyTarget = normalizeKey(collegeName || collegeId);
+        const normKeyMentor = normalizeKey(mentor.collegeName || mentor.institution || mentor.collegeId);
+        if (normKeyTarget && normKeyMentor && (normKeyTarget.includes(normKeyMentor) || normKeyMentor.includes(normKeyTarget))) {
           collegeMatches = true;
         } else {
-          // Significant distinctive words (>= 4 chars, excluding stopwords)
-          const stopwords = ['college', 'institute', 'university', 'technology', 'engineering', 'autonomous', 'deemed', 'maharashtra'];
-          const tWords = tColName.split(' ').filter(w => w.length >= 4 && !stopwords.includes(w));
-          const mWords = mColName.split(' ').filter(w => w.length >= 4 && !stopwords.includes(w));
+          const stopwords = ['college', 'institute', 'university', 'technology', 'engineering', 'autonomous', 'deemed', 'maharashtra', 'of', 'and', 'the', 'for', 'shri', 'dr', 'prof'];
+          const tWords = targetColTokens.split(' ').filter(w => w.length >= 3 && !stopwords.includes(w));
+          const mWords = mentorColTokens.split(' ').filter(w => w.length >= 3 && !stopwords.includes(w));
           collegeMatches = tWords.some(w => mWords.includes(w));
         }
       }
-    } else if (tColId && mColName) {
-      collegeMatches = mColName.includes(tColId);
     }
 
     if (!collegeMatches) continue;
 
+    const mentorKey = mentor.email || mentor.id;
+    if (!seenMentors.has(mentorKey)) {
+      seenMentors.add(mentorKey);
+      collegeOnlyMentors.push(mentor);
+    }
+
     // 2. Department Matching
     let deptMatches = false;
-    if (!tDeptId && !tDeptName) {
+    if (!departmentId && !departmentName) {
       deptMatches = true;
-    } else if (tDeptId && mDeptId && tDeptId === mDeptId) {
-      deptMatches = true;
-    } else if (tDeptName && mDeptName) {
-      if (mDeptName === tDeptName || mDeptName.includes(tDeptName) || tDeptName.includes(mDeptName)) {
+    } else if (targetDeptTokens && mentorDeptTokens) {
+      if (targetDeptTokens.includes(mentorDeptTokens) || mentorDeptTokens.includes(targetDeptTokens)) {
         deptMatches = true;
       } else {
-        // Discipline groups for robust matching
         const disciplineGroups = [
           ['computer', 'cse', 'cs', 'computing', 'software', 'bca', 'mca'],
           ['information technology', 'it', 'infotech'],
@@ -638,10 +694,7 @@ export async function fetchMentorsByDepartmentFromFirestore(collegeId, departmen
           ['chemical', 'biotechnology', 'biotech', 'bioinformatics'],
           ['commerce', 'bcom', 'b.com', 'baf', 'bbi', 'bfm', 'management', 'bms', 'bba', 'mba', 'mms'],
           ['arts', 'humanities', 'literature', 'economics', 'psychology', 'journalism', 'political', 'sociology'],
-          ['science', 'mathematics', 'physics', 'chemistry', 'biology', 'microbiology'],
-          ['law', 'llb', 'll.b', 'llm'],
-          ['pharmacy', 'bpharm', 'mpharm'],
-          ['architecture', 'barch']
+          ['science', 'mathematics', 'physics', 'chemistry', 'biology', 'microbiology']
         ];
 
         const matchKeyword = (text, kw) => {
@@ -653,30 +706,17 @@ export async function fetchMentorsByDepartmentFromFirestore(collegeId, departmen
         };
 
         deptMatches = disciplineGroups.some(group => 
-          group.some(kw => matchKeyword(mDeptName, kw)) && group.some(kw => matchKeyword(tDeptName, kw))
+          group.some(kw => matchKeyword(mentorDeptTokens, kw)) && group.some(kw => matchKeyword(targetDeptTokens, kw))
         );
-
-        if (!deptMatches) {
-          const mDeptAcronyms = extractAcronyms(mentor.departmentName);
-          deptMatches = tDeptAcronyms.some(a => a.length >= 2 && mDeptAcronyms.includes(a));
-        }
       }
-    } else if (tDeptId && mDeptName) {
-      deptMatches = mDeptName.includes(tDeptId);
-    } else if (!mDeptId && !mDeptName) {
-      // General mentor at this college
-      deptMatches = true;
     }
 
     if (deptMatches) {
-      const key = mentor.email || mentor.id;
-      if (!seenMentors.has(key)) {
-        seenMentors.add(key);
-        matchedMentors.push(mentor);
-      }
+      matchedMentors.push(mentor);
     }
   }
 
+  // Return mentors that strictly match BOTH selected college AND selected department
   return matchedMentors;
 }
 

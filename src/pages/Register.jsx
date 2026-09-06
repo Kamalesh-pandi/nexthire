@@ -64,71 +64,53 @@ export default function Register() {
     loadColleges();
   }, []);
 
-  // 2. Fetch Departments & corresponding Mentors when selectedCollegeId changes
+  // 2. Fetch Departments when selectedCollegeId changes
   useEffect(() => {
     if (!selectedCollegeId) return;
     let isCancelled = false;
 
-    async function loadDeptsAndMentors() {
-      setLoadingMentors(true);
+    async function loadDepts() {
       try {
         const deptData = await fetchDepartmentsFromFirestore(selectedCollegeId);
         if (isCancelled) return;
         setDepartments(deptData);
 
-        // Keep current department if valid for new college, else default to first
-        let currentDeptId = selectedDepartmentId;
-        if (!deptData.some(d => d.id === currentDeptId)) {
-          currentDeptId = deptData[0]?.id || '';
-          setSelectedDepartmentId(currentDeptId);
-        }
-
-        const activeCollege = colleges.find(c => c.id === selectedCollegeId);
-        const activeDept = deptData.find(d => d.id === currentDeptId);
-
-        const mentors = await fetchMentorsByDepartmentFromFirestore(
-          selectedCollegeId, 
-          currentDeptId,
-          activeCollege?.name,
-          activeDept?.name
-        );
-        if (isCancelled) return;
-        setAvailableMentors(mentors);
-        if (mentors.length > 0) {
-          setSelectedMentorId(mentors[0].id || mentors[0].uid);
-        } else {
-          setSelectedMentorId('');
+        if (deptData.length > 0) {
+          setSelectedDepartmentId(prev => {
+            if (prev && deptData.some(d => d.id === prev)) return prev;
+            return deptData[0].id;
+          });
         }
       } catch (err) {
-        console.error("Error loading departments and mentors:", err);
-      } finally {
-        if (!isCancelled) setLoadingMentors(false);
+        console.error("Error loading departments:", err);
       }
     }
 
-    loadDeptsAndMentors();
+    loadDepts();
     return () => { isCancelled = true; };
-  }, [selectedCollegeId, colleges]);
+  }, [selectedCollegeId]);
 
-  // 3. When selectedDepartmentId changes (user clicks or selects a department)
+  // 3. Fetch Mentors whenever selectedCollegeId, selectedDepartmentId, colleges, or departments changes
   useEffect(() => {
-    if (!selectedCollegeId || !selectedDepartmentId) return;
+    if (!selectedCollegeId) return;
     let isCancelled = false;
 
-    async function updateMentorsForDept() {
+    async function loadMentors() {
       setLoadingMentors(true);
       try {
         const activeCollege = colleges.find(c => c.id === selectedCollegeId);
         const activeDept = departments.find(d => d.id === selectedDepartmentId);
 
         const mentors = await fetchMentorsByDepartmentFromFirestore(
-          selectedCollegeId, 
+          selectedCollegeId,
           selectedDepartmentId,
-          activeCollege?.name,
-          activeDept?.name
+          activeCollege?.name || activeCollege?.institution || '',
+          activeDept?.name || ''
         );
+
         if (isCancelled) return;
         setAvailableMentors(mentors);
+
         if (mentors.length > 0) {
           setSelectedMentorId(prev => {
             const stillValid = mentors.some(m => (m.id === prev || m.uid === prev));
@@ -138,15 +120,15 @@ export default function Register() {
           setSelectedMentorId('');
         }
       } catch (err) {
-        console.error("Error updating mentors for department:", err);
+        console.error("Error loading mentors:", err);
       } finally {
         if (!isCancelled) setLoadingMentors(false);
       }
     }
 
-    updateMentorsForDept();
+    loadMentors();
     return () => { isCancelled = true; };
-  }, [selectedDepartmentId]);
+  }, [selectedCollegeId, selectedDepartmentId, colleges, departments]);
 
   const handleRegister = async (e) => {
     e.preventDefault();

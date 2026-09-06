@@ -15,7 +15,19 @@ export default function StudentSearch() {
       try {
         const users = await fetchAllUsersFromFirestore();
         const studentUsers = users.filter(u => !u.role || u.role === 'student');
-        setStudents(studentUsers);
+        const uniqueStudents = [];
+        const seenKeys = new Set();
+        studentUsers.forEach(s => {
+          const emailKey = (s.email || '').toLowerCase().trim();
+          const idKey = s.id || s.uid;
+          const nameKey = (s.name || '').toLowerCase().trim();
+          const key = emailKey || idKey || nameKey;
+          if (key && !seenKeys.has(key)) {
+            seenKeys.add(key);
+            uniqueStudents.push(s);
+          }
+        });
+        setStudents(uniqueStudents);
       } catch (err) {
         console.error("Error loading student database records:", err);
       } finally {
