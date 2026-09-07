@@ -55,6 +55,9 @@ export default function JobsAndInternships() {
         userEmail: currentUser?.email || 'student@nexthire.ai',
         userSkills: currentUser?.skills || ['React.js', 'Python'],
         resumeScore: currentUser?.resumeScore || 85,
+        resumeUrl: currentUser?.resumeUrl || '',
+        resumeFileName: currentUser?.resumeFileName || '',
+        resumeRawText: currentUser?.resumeRawText || '',
         matchPercentage: matchScore,
         status: 'Applied',
         appliedAt: new Date().toISOString().split('T')[0]

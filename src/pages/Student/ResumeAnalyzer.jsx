@@ -23,6 +23,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { extractTextFromFile } from '../../services/pdfService';
 import { analyzeResumeWithAI } from '../../services/aiService';
+import { uploadResumeToFirebaseStorage } from '../../services/firebase';
 
 export default function ResumeAnalyzer() {
   const { currentUser, updateProfile } = useAuth();
@@ -123,9 +124,16 @@ B.Tech in Computer Science & Engineering | IIT Delhi (GPA: 8.9/10) | Expected 20
 
     try {
       let textToProcess = textOverride || pastedText;
+      let uploadedResumeUrl = currentUser?.resumeUrl || '';
+
       if (targetFile) {
-        setAnalysisStep(1); // Extracting text from PDF/doc
-        textToProcess = await extractTextFromFile(targetFile);
+        setAnalysisStep(1); // Extracting text & uploading PDF
+        const [extractedText, firebaseUrl] = await Promise.all([
+          extractTextFromFile(targetFile),
+          uploadResumeToFirebaseStorage(targetFile, currentUser?.id || currentUser?.uid)
+        ]);
+        textToProcess = extractedText;
+        if (firebaseUrl) uploadedResumeUrl = firebaseUrl;
       }
 
       if (!textToProcess || textToProcess.trim().length < 20) {
@@ -151,7 +159,9 @@ B.Tech in Computer Science & Engineering | IIT Delhi (GPA: 8.9/10) | Expected 20
         resumeScore: result.resumeScore || 85,
         atsScore: result.resumeScore || 85,
         softSkills: result.softSkills || [],
-        resumeFileName: targetFile?.name || 'Resume.pdf',
+        resumeFileName: targetFile?.name || currentUser?.resumeFileName || 'Resume.pdf',
+        resumeUrl: uploadedResumeUrl,
+        resumeRawText: textToProcess || '',
         resumeUpdatedAt: new Date().toISOString()
       };
 

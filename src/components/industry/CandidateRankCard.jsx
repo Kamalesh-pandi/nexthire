@@ -1,7 +1,7 @@
 import React from 'react';
 import { Award, Check, X, MessageSquare, ExternalLink, Sparkles, FileText } from 'lucide-react';
 
-export default function CandidateRankCard({ candidate, rank, onStatusChange, onOpenChat }) {
+export default function CandidateRankCard({ candidate, rank, onStatusChange, onOpenChat, onViewResume }) {
   const { userName, userEmail, userSkills, resumeScore, matchPercentage, status, feedback } = candidate;
 
   return (
@@ -43,6 +43,17 @@ export default function CandidateRankCard({ candidate, rank, onStatusChange, onO
 
       {/* Recruiter Action Controls */}
       <div className="flex items-center gap-2 self-end md:self-center">
+        
+        {/* View Resume Button */}
+        <button
+          onClick={() => onViewResume && onViewResume(candidate)}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs border border-blue-200 transition-colors shadow-2xs"
+          title="View Student Resume"
+        >
+          <FileText className="w-4 h-4 text-blue-600" />
+          <span>View Resume</span>
+        </button>
+
         <button
           onClick={() => onOpenChat && onOpenChat(userName, 'Student')}
           className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 transition-colors"

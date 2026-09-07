@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Search, GraduationCap, Award, Mail, MessageSquare, CheckCircle2 } from 'lucide-react';
+import { Search, GraduationCap, Award, Mail, MessageSquare, CheckCircle2, FileText } from 'lucide-react';
 import { fetchAllUsersFromFirestore } from '../../services/firebase';
 import ChatModal from '../../components/common/ChatModal';
+import StudentResumeModal from '../../components/industry/StudentResumeModal';
 
 export default function StudentSearch() {
   const [searchTerm, setSearchTerm] = useState('');
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [chatRecipient, setChatRecipient] = useState(null);
+  const [selectedResumeStudent, setSelectedResumeStudent] = useState(null);
 
   useEffect(() => {
     async function loadStudents() {
@@ -109,15 +111,34 @@ export default function StudentSearch() {
                 </div>
               </div>
 
-              <button
-                onClick={() => setChatRecipient({ name: student.name || 'Student', role: 'Student' })}
-                className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-md shadow-blue-500/20"
-              >
-                <MessageSquare className="w-4 h-4" /> Message Student
-              </button>
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                <button
+                  onClick={() => setSelectedResumeStudent(student)}
+                  className="w-full py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center gap-1.5 border border-blue-200 transition-colors"
+                >
+                  <FileText className="w-3.5 h-3.5 text-blue-600" /> View Resume
+                </button>
+                <button
+                  onClick={() => setChatRecipient({ name: student.name || 'Student', role: 'Student' })}
+                  className="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-md shadow-blue-500/20"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" /> Message
+                </button>
+              </div>
             </div>
           ))}
         </div>
+      )}
+
+      {selectedResumeStudent && (
+        <StudentResumeModal
+          candidate={selectedResumeStudent}
+          onClose={() => setSelectedResumeStudent(null)}
+          onOpenChat={(name, role) => {
+            setSelectedResumeStudent(null);
+            setChatRecipient({ name, role });
+          }}
+        />
       )}
 
       {chatRecipient && (

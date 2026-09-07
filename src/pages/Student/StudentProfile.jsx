@@ -18,6 +18,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { extractTextFromFile } from '../../services/pdfService';
 import { analyzeResumeWithAI } from '../../services/aiService';
+import { uploadResumeToFirebaseStorage } from '../../services/firebase';
 import SkillInputWithSuggestions from '../../components/common/SkillInputWithSuggestions';
 
 export default function StudentProfile() {
@@ -83,8 +84,11 @@ export default function StudentProfile() {
     setResumeUploadStep(1);
 
     try {
-      // Step 1: Extract Text
-      const text = await extractTextFromFile(selectedFile);
+      // Step 1: Extract Text & Upload PDF File to Firebase Storage
+      const [text, resumeUrl] = await Promise.all([
+        extractTextFromFile(selectedFile),
+        uploadResumeToFirebaseStorage(selectedFile, currentUser?.id || currentUser?.uid)
+      ]);
       
       // Step 2: AI Competency & Information Analysis
       setResumeUploadStep(2);
@@ -107,6 +111,8 @@ export default function StudentProfile() {
         atsScore: result.resumeScore || 85,
         softSkills: result.softSkills || [],
         resumeFileName: selectedFile.name,
+        resumeUrl: resumeUrl || currentUser?.resumeUrl || '',
+        resumeRawText: text || '',
         resumeUpdatedAt: new Date().toISOString()
       };
 

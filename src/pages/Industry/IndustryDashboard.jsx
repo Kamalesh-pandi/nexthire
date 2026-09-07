@@ -9,12 +9,14 @@ import {
   Briefcase, 
   Search, 
   ArrowUpRight,
-  Award
+  Award,
+  FileText
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { fetchJobsFromFirestore, fetchApplicationsFromFirestore, deduplicateJobs } from '../../services/firebase';
+import { fetchJobsFromFirestore, fetchApplicationsFromFirestore, deduplicateJobs, fetchAllUsersFromFirestore } from '../../services/firebase';
 import JobPostModal from '../../components/industry/JobPostModal';
 import ChatModal from '../../components/common/ChatModal';
+import StudentResumeModal from '../../components/industry/StudentResumeModal';
 
 export default function IndustryDashboard() {
   const { currentUser } = useAuth();
@@ -23,17 +25,40 @@ export default function IndustryDashboard() {
   const [loading, setLoading] = useState(true);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [chatRecipient, setChatRecipient] = useState(null);
+  const [selectedResumeCandidate, setSelectedResumeCandidate] = useState(null);
 
   useEffect(() => {
     async function loadDashboardData() {
       setLoading(true);
       try {
-        const [jobsList, appsList] = await Promise.all([
+        const [jobsList, appsList, usersList] = await Promise.all([
           fetchJobsFromFirestore(),
-          fetchApplicationsFromFirestore()
+          fetchApplicationsFromFirestore(),
+          fetchAllUsersFromFirestore()
         ]);
+
+        const enrichedApps = appsList.map(app => {
+          const user = usersList.find(u => 
+            (u.id && app.userId && u.id === app.userId) ||
+            (u.uid && app.userId && u.uid === app.userId) ||
+            (u.email && app.userEmail && u.email.toLowerCase() === app.userEmail.toLowerCase())
+          );
+          if (user) {
+            return {
+              ...app,
+              resumeUrl: app.resumeUrl || user.resumeUrl || '',
+              resumeFileName: app.resumeFileName || user.resumeFileName || '',
+              resumeRawText: app.resumeRawText || user.resumeRawText || '',
+              institution: app.institution || user.institution || user.collegeName || '',
+              degree: app.degree || user.degree || '',
+              bio: app.bio || user.bio || ''
+            };
+          }
+          return app;
+        });
+
         setJobs(deduplicateJobs(jobsList));
-        setApplications(appsList);
+        setApplications(enrichedApps);
       } catch (err) {
         console.error("Error loading recruiter dashboard data from Firestore:", err);
       } finally {
@@ -98,7 +123,7 @@ export default function IndustryDashboard() {
           <div>
             <p className="text-xs text-slate-500 font-semibold">Active Job Postings</p>
             <h3 className="text-2xl font-black text-indigo-600 mt-1">{jobs.length}</h3>
-            <span className="text-[10px] text-slate-400 font-medium block mt-1">Live Opportunity Listings</span>
+            <span className="text-[10px] text-slate-400 block mt-1">Open Positions</span>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold border border-indigo-100">
             <Briefcase className="w-6 h-6" />
@@ -107,11 +132,9 @@ export default function IndustryDashboard() {
 
         <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs text-slate-500 font-semibold">Shortlisted Talent</p>
-            <h3 className="text-2xl font-black text-emerald-600 mt-1">
-              {shortlistedCount}
-            </h3>
-            <span className="text-[10px] text-emerald-700 font-semibold block mt-1">Ready for Interview</span>
+            <p className="text-xs text-slate-500 font-semibold">Shortlisted Candidates</p>
+            <h3 className="text-2xl font-black text-emerald-600 mt-1">{shortlistedCount}</h3>
+            <span className="text-[10px] text-slate-400 block mt-1">In Evaluation Pipeline</span>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold border border-emerald-100">
             <UserCheck className="w-6 h-6" />
@@ -120,22 +143,22 @@ export default function IndustryDashboard() {
 
         <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs text-slate-500 font-semibold">Avg Candidate Match</p>
+            <p className="text-xs text-slate-500 font-semibold">Avg AI Match Score</p>
             <h3 className="text-2xl font-black text-amber-600 mt-1">{avgMatchScore}%</h3>
-            <span className="text-[10px] text-amber-700 font-semibold block mt-1">AI Verified Skills</span>
+            <span className="text-[10px] text-slate-400 block mt-1">Candidate-Job Compatibility</span>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold border border-amber-100">
-            <Sparkles className="w-6 h-6" />
+            <Sparkles className="w-6 h-6 text-amber-500" />
           </div>
         </div>
 
       </div>
 
-      {/* Main Recruiter Section */}
+      {/* Main Grid Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* Active Job Postings */}
-        <div className="lg:col-span-2 space-y-4">
+        {/* Active Postings Column */}
+        <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <Briefcase className="w-5 h-5 text-blue-600" /> Active Job & Internship Postings
@@ -219,12 +242,20 @@ export default function IndustryDashboard() {
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500 font-medium">{app.jobTitle}</p>
-                    <button
-                      onClick={() => setChatRecipient({ name: app.userName, role: 'Student' })}
-                      className="w-full py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 text-[11px] font-semibold transition-colors border border-slate-200 shadow-xs"
-                    >
-                      Contact Student
-                    </button>
+                    <div className="grid grid-cols-2 gap-1.5 pt-1">
+                      <button
+                        onClick={() => setSelectedResumeCandidate(app)}
+                        className="py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-bold flex items-center justify-center gap-1 transition-colors border border-blue-200 shadow-2xs"
+                      >
+                        <FileText className="w-3 h-3 text-blue-600" /> View Resume
+                      </button>
+                      <button
+                        onClick={() => setChatRecipient({ name: app.userName, role: 'Student' })}
+                        className="py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 text-[11px] font-semibold transition-colors border border-slate-200 shadow-2xs"
+                      >
+                        Contact
+                      </button>
+                    </div>
                   </div>
                 ))
               )}
@@ -255,6 +286,17 @@ export default function IndustryDashboard() {
         onClose={() => setIsPostModalOpen(false)}
         onJobCreated={handleJobCreated}
       />
+
+      {selectedResumeCandidate && (
+        <StudentResumeModal
+          candidate={selectedResumeCandidate}
+          onClose={() => setSelectedResumeCandidate(null)}
+          onOpenChat={(name, role) => {
+            setSelectedResumeCandidate(null);
+            setChatRecipient({ name, role });
+          }}
+        />
+      )}
 
       {chatRecipient && (
         <ChatModal

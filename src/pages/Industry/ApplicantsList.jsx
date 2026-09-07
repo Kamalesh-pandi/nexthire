@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { UserCheck, Sparkles, Filter, CheckCircle2, Award } from 'lucide-react';
-import { fetchJobsFromFirestore, fetchApplicationsFromFirestore, updateApplicationStatusInFirestore, deduplicateJobs } from '../../services/firebase';
+import { fetchJobsFromFirestore, fetchApplicationsFromFirestore, updateApplicationStatusInFirestore, deduplicateJobs, fetchAllUsersFromFirestore } from '../../services/firebase';
 import { addNotification } from '../../services/notificationService';
 import { rankCandidatesForJob } from '../../services/aiService';
 import CandidateRankCard from '../../components/industry/CandidateRankCard';
 import ChatModal from '../../components/common/ChatModal';
+import StudentResumeModal from '../../components/industry/StudentResumeModal';
 
 export default function ApplicantsList() {
   const [jobs, setJobs] = useState([]);
@@ -13,18 +14,42 @@ export default function ApplicantsList() {
   const [selectedJobId, setSelectedJobId] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [chatRecipient, setChatRecipient] = useState(null);
+  const [selectedResumeCandidate, setSelectedResumeCandidate] = useState(null);
 
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       try {
-        const [jobsList, appsList] = await Promise.all([
+        const [jobsList, appsList, usersList] = await Promise.all([
           fetchJobsFromFirestore(),
-          fetchApplicationsFromFirestore()
+          fetchApplicationsFromFirestore(),
+          fetchAllUsersFromFirestore()
         ]);
         const uniqueJobs = deduplicateJobs(jobsList);
+        
+        // Merge latest user profile uploaded resume details onto each candidate application
+        const enrichedApps = appsList.map(app => {
+          const user = usersList.find(u => 
+            (u.id && app.userId && u.id === app.userId) ||
+            (u.uid && app.userId && u.uid === app.userId) ||
+            (u.email && app.userEmail && u.email.toLowerCase() === app.userEmail.toLowerCase())
+          );
+          if (user) {
+            return {
+              ...app,
+              resumeUrl: app.resumeUrl || user.resumeUrl || '',
+              resumeFileName: app.resumeFileName || user.resumeFileName || '',
+              resumeRawText: app.resumeRawText || user.resumeRawText || '',
+              institution: app.institution || user.institution || user.collegeName || '',
+              degree: app.degree || user.degree || '',
+              bio: app.bio || user.bio || ''
+            };
+          }
+          return app;
+        });
+
         setJobs(uniqueJobs);
-        setApplications(appsList);
+        setApplications(enrichedApps);
         if (uniqueJobs.length > 0) {
           setSelectedJobId(uniqueJobs[0].id);
         }
@@ -169,11 +194,26 @@ export default function ApplicantsList() {
               rank={idx + 1}
               onStatusChange={handleStatusChange}
               onOpenChat={(name, role) => setChatRecipient({ name, role })}
+              onViewResume={(cand) => setSelectedResumeCandidate(cand)}
             />
           ))
         )}
       </div>
 
+      {/* Student Resume Modal */}
+      {selectedResumeCandidate && (
+        <StudentResumeModal
+          candidate={selectedResumeCandidate}
+          onClose={() => setSelectedResumeCandidate(null)}
+          onOpenChat={(name, role) => {
+            setSelectedResumeCandidate(null);
+            setChatRecipient({ name, role });
+          }}
+          onStatusChange={handleStatusChange}
+        />
+      )}
+
+      {/* Chat Modal */}
       {chatRecipient && (
         <ChatModal
           recipientName={chatRecipient.name}

@@ -368,18 +368,36 @@ export async function createProjectInFirestore(projectData) {
  * 5. FIREBASE STORAGE: Resume Upload
  */
 export async function uploadResumeToFirebaseStorage(file, userId) {
-  if (!isLiveFirebaseConfigured || !storage) {
-    return "https://example.com/mock_resume.pdf";
+  if (!file) return "";
+
+  if (isLiveFirebaseConfigured && storage) {
+    try {
+      const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const storageRef = ref(storage, `resumes/${userId || 'student'}_${Date.now()}_${sanitizedName}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      return downloadURL;
+    } catch (err) {
+      console.warn("Firebase Storage upload error, using local data URL fallback:", err);
+    }
   }
-  try {
-    const storageRef = ref(storage, `resumes/${userId}_${file.name}`);
-    const snapshot = await uploadBytes(storageRef, file);
-    const downloadURL = await getDownloadURL(snapshot.ref);
-    return downloadURL;
-  } catch (err) {
-    console.error("Firebase Storage upload error:", err);
-    return "https://example.com/mock_resume.pdf";
-  }
+
+  // Fallback when live Firebase Storage is not connected:
+  // Convert uploaded PDF file to Data URL (Base64) or Blob URL for local persistence & instant preview
+  return new Promise((resolve) => {
+    try {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result || "");
+      };
+      reader.onerror = () => {
+        resolve(URL.createObjectURL(file));
+      };
+      reader.readAsDataURL(file);
+    } catch (e) {
+      resolve(URL.createObjectURL(file));
+    }
+  });
 }
 
 import { fetchAllIndianCollegesAPI, getDepartmentsForCollege, normalizeKey, isMaharashtraInstitution } from './collegeApiService';
